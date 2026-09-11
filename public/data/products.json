@@ -1,0 +1,134 @@
+[
+  {
+    "id": "prod-1",
+    "name": "iPhone 15 Pro Max 256GB",
+    "brand": "Apple",
+    "category": "phone",
+    "subCategory": "Flagship Smartphone",
+    "price": 134900,
+    "originalPrice": 149900,
+    "rating": 4.9,
+    "reviewsCount": 342,
+    "image": "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "8 GB",
+      "storage": "256 GB",
+      "display": "6.7\" Super Retina XDR OLED 120Hz",
+      "battery": "4422 mAh Fast Charging",
+      "camera": "48MP + 12MP + 12MP Triple System"
+    },
+    "inStock": true,
+    "isFeatured": true,
+    "description": "Titanium design with A17 Pro chip, customizable Action button, and versatile pro camera system."
+  },
+  {
+    "id": "prod-2",
+    "name": "Samsung Galaxy S24 Ultra 512GB",
+    "brand": "Samsung",
+    "category": "phone",
+    "subCategory": "AI Flagship Smartphone",
+    "price": 129999,
+    "originalPrice": 144999,
+    "rating": 4.8,
+    "reviewsCount": 289,
+    "image": "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "12 GB",
+      "storage": "512 GB",
+      "display": "6.8\" Dynamic AMOLED 2X 120Hz",
+      "battery": "5000 mAh 45W Fast Charging",
+      "camera": "200MP + 50MP + 12MP + 10MP Quad"
+    },
+    "inStock": true,
+    "isFeatured": true,
+    "description": "Galaxy AI capabilities, titanium frame, built-in S Pen, and groundbreaking 200MP camera system."
+  },
+  {
+    "id": "prod-3",
+    "name": "OnePlus 12 5G (Flowy Emerald)",
+    "brand": "OnePlus",
+    "category": "phone",
+    "subCategory": "Performance Smartphone",
+    "price": 64999,
+    "originalPrice": 69999,
+    "rating": 4.7,
+    "reviewsCount": 195,
+    "image": "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "16 GB",
+      "storage": "512 GB",
+      "display": "6.82\" 2K 120Hz ProXDR Display",
+      "battery": "5400 mAh 100W SUPERVOOC",
+      "camera": "50MP 4th Gen Hasselblad Camera"
+    },
+    "inStock": true,
+    "isFeatured": true,
+    "description": "Snapdragon 8 Gen 3 flagship processor, trinity engine, and ultra-fast 100W wired charging."
+  },
+  {
+    "id": "prod-4",
+    "name": "Google Pixel 9 Pro 128GB",
+    "brand": "Google",
+    "category": "phone",
+    "subCategory": "Pure Android Flagship",
+    "price": 109999,
+    "originalPrice": 119999,
+    "rating": 4.8,
+    "reviewsCount": 150,
+    "image": "https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "16 GB",
+      "storage": "128 GB",
+      "display": "6.3\" Super Actua OLED 120Hz",
+      "battery": "4700 mAh Fast Wireless",
+      "camera": "50MP Main + 48MP Ultrawide + 48MP Tele"
+    },
+    "inStock": true,
+    "isFeatured": false,
+    "description": "Powered by Google Tensor G4 with Gemini Nano on-device AI and industry-leading photography."
+  },
+  {
+    "id": "prod-5",
+    "name": "Nothing Phone (2a) Plus 256GB",
+    "brand": "Nothing",
+    "category": "phone",
+    "subCategory": "Mid-Range Smartphone",
+    "price": 27999,
+    "originalPrice": 29999,
+    "rating": 4.6,
+    "reviewsCount": 420,
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "12 GB",
+      "storage": "256 GB",
+      "display": "6.7\" Flexible AMOLED 120Hz",
+      "battery": "5000 mAh 50W Fast Charge",
+      "camera": "50MP Dual Camera + 50MP Selfie"
+    },
+    "inStock": true,
+    "isFeatured": false,
+    "description": "Iconic glyph interface, Dimensity 7350 Pro 5G processor, and clean Nothing OS with no bloatware."
+  },
+  {
+    "id": "prod-6",
+    "name": "Redmi Note 13 Pro+ 5G",
+    "brand": "Xiaomi",
+    "category": "phone",
+    "subCategory": "Value Champion",
+    "price": 31999,
+    "originalPrice": 35999,
+    "rating": 4.5,
+    "reviewsCount": 512,
+    "image": "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "12 GB",
+      "storage": "512 GB",
+      "display": "6.67\" 1.5K 3D Curved AMOLED",
+      "battery": "5000 mAh 120W HyperCharge",
+      "camera": "200MP OIS Camera with 4x lossless"
+    },
+    "inStock": true,
+    "isFeatured": false,
+    "description": "IP68 water protection, 120W HyperCharge, curved AMOLED display and flagship 200MP OIS camera."
+  }
+]

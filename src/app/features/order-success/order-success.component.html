@@ -1,0 +1,65 @@
+<div class="order-success-page container section-padding">
+  <div class="success-card glass-panel animate-fade-in">
+    <div class="check-circle pulse-glow">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+
+    <span class="badge badge-success">Order Registered</span>
+    <h1 class="success-title">Your Order Has Been Placed!</h1>
+    <p class="success-subtitle">
+      Our team will contact you shortly to confirm your delivery address and dispatch timeline.
+    </p>
+
+    <!-- Email Dispatch Notification Notice -->
+    <div class="email-notice glass-panel">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      <span>
+        Complete order breakdown has been dispatched directly to the store manager at <strong>bhuvaneshwaranaj&#64;gmail.com</strong> for fulfillment.
+      </span>
+    </div>
+
+    @if (order; as ord) {
+      <div class="receipt-box glass-panel">
+        <div class="receipt-header">
+          <div>
+            <span class="r-label">Order Reference:</span>
+            <span class="r-val">#{{ ord.orderNumber }}</span>
+          </div>
+          <div>
+            <span class="r-label">Order Date:</span>
+            <span class="r-val">{{ ord.createdAt }}</span>
+          </div>
+        </div>
+
+        <div class="customer-preview">
+          <h4>Customer & Delivery Details</h4>
+          <p><strong>Name:</strong> {{ ord.customer.name }}</p>
+          <p><strong>Mobile:</strong> {{ ord.customer.phone }}</p>
+          <p><strong>Address:</strong> {{ ord.customer.address }} {{ ord.customer.pincode ? '(' + ord.customer.pincode + ')' : '' }}</p>
+        </div>
+
+        <div class="items-summary-list">
+          <h4>Items Ordered ({{ ord.items.length }})</h4>
+          @for (item of ord.items; track item.productId) {
+            <div class="item-line">
+              <span>{{ item.name }} (x{{ item.quantity }})</span>
+              <span class="item-price">₹{{ item.totalPrice | number }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="receipt-footer">
+          <div class="total-row">
+            <span>Total Payable Amount:</span>
+            <span class="grand-total">₹{{ ord.totalAmount | number }}</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="success-actions">
+      <a routerLink="/" class="btn btn-primary btn-lg">Return to Dashboard</a>
+      <a routerLink="/products" class="btn btn-secondary btn-lg">Continue Shopping</a>
+    </div>
+  </div>
+</div>

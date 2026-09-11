@@ -1,0 +1,159 @@
+<div class="services-page container section-padding">
+  <!-- Page Header -->
+  <div class="page-title-area text-center">
+    <span class="badge badge-purple">Doorstep & In-Store Repairs</span>
+    <h1 class="page-title">Expert Mobile Phone Repair Services</h1>
+    <p class="page-subtitle">Pick your repair requirement. Original parts, 6 months warranty, and free diagnostics.</p>
+  </div>
+
+  <!-- Category Pills -->
+  <div class="cat-pill-center">
+    <button class="pill-btn" [class.active]="selectedCategory === 'all'" (click)="selectedCategory = 'all'">All Services</button>
+    <button class="pill-btn" [class.active]="selectedCategory === 'screen'" (click)="selectedCategory = 'screen'">Display & Screen</button>
+    <button class="pill-btn" [class.active]="selectedCategory === 'battery'" (click)="selectedCategory = 'battery'">Battery Health</button>
+    <button class="pill-btn" [class.active]="selectedCategory === 'camera'" (click)="selectedCategory = 'camera'">Cameras</button>
+    <button class="pill-btn" [class.active]="selectedCategory === 'motherboard'" (click)="selectedCategory = 'motherboard'">Water & Board</button>
+  </div>
+
+  <!-- Services Grid -->
+  <div class="services-grid animate-fade-in">
+    @for (srv of filteredServices; track srv.id) {
+      <app-service-card [service]="srv" (bookClicked)="openBookingModal($event)"></app-service-card>
+    }
+  </div>
+
+  <!-- Booking Modal -->
+  @if (activeBookingModal && selectedService) {
+    <div class="modal-backdrop animate-fade-in" (click)="closeBookingModal()">
+      <div class="modal-card glass-panel" (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <div>
+            <span class="badge badge-cyan">Appointment Request</span>
+            <h3 class="modal-title">{{ selectedService.name }}</h3>
+          </div>
+          <button class="modal-close" (click)="closeBookingModal()">✕</button>
+        </div>
+
+        @if (!bookingSubmitted) {
+          <!-- Booking Form -->
+          <form class="booking-form" (ngSubmit)="submitBooking()">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Mobile Brand & Model <span class="required">*</span></label>
+                <input
+                  type="text"
+                  [(ngModel)]="bookingForm.deviceModel"
+                  name="deviceModel"
+                  placeholder="e.g., iPhone 14 Pro, Samsung Galaxy S23"
+                  class="form-control"
+                  required />
+              </div>
+
+              <div class="form-group">
+                <label>Estimated Service Charge</label>
+                <div class="quote-pill">
+                  Starting from <strong>₹{{ selectedService.startingPrice | number }}</strong> ({{ selectedService.warrantyPeriod }})
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Issue Description / Symptoms</label>
+              <textarea
+                [(ngModel)]="bookingForm.issueDescription"
+                name="issueDescription"
+                placeholder="Briefly describe what happened (e.g. dropped in water, blank screen, rapid discharge)..."
+                class="form-control"></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Customer Full Name <span class="required">*</span></label>
+                <input
+                  type="text"
+                  [(ngModel)]="bookingForm.customerName"
+                  name="customerName"
+                  placeholder="Your full name"
+                  class="form-control"
+                  required />
+              </div>
+
+              <div class="form-group">
+                <label>Mobile Number <span class="required">*</span></label>
+                <input
+                  type="tel"
+                  [(ngModel)]="bookingForm.customerPhone"
+                  name="customerPhone"
+                  placeholder="10-digit mobile number"
+                  class="form-control"
+                  required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Pickup / Service Address <span class="required">*</span></label>
+              <input
+                type="text"
+                [(ngModel)]="bookingForm.customerAddress"
+                name="customerAddress"
+                placeholder="Door No, Street Name, Area, City, Pincode"
+                class="form-control"
+                required />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Preferred Date</label>
+                <input
+                  type="date"
+                  [(ngModel)]="bookingForm.preferredDate"
+                  name="preferredDate"
+                  class="form-control" />
+              </div>
+
+              <div class="form-group">
+                <label>Preferred Time Slot</label>
+                <select [(ngModel)]="bookingForm.preferredTimeSlot" name="preferredTimeSlot" class="form-control">
+                  @for (slot of timeSlots; track slot) {
+                    <option [value]="slot">{{ slot }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" (click)="closeBookingModal()">Cancel</button>
+              <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+                @if (isSubmitting) {
+                  Scheduling Appointment...
+                } @else {
+                  Confirm Service Booking
+                }
+              </button>
+            </div>
+          </form>
+        } @else {
+          <!-- Booking Success View -->
+          <div class="booking-success-box animate-fade-in">
+            <div class="success-icon-wrap">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h2>Service Appointment Scheduled!</h2>
+            <p class="success-msg">
+              Your service request <strong>#{{ confirmedBooking?.id }}</strong> has been forwarded to our technician team. A senior engineer will call you shortly on <strong>{{ confirmedBooking?.customerPhone }}</strong> to confirm pickup!
+            </p>
+
+            <div class="appointment-summary glass-panel">
+              <div><strong>Device:</strong> {{ confirmedBooking?.deviceModel }}</div>
+              <div><strong>Slot:</strong> {{ confirmedBooking?.preferredDate }} ({{ confirmedBooking?.preferredTimeSlot }})</div>
+              <div><strong>Location:</strong> {{ confirmedBooking?.customerAddress }}</div>
+            </div>
+
+            <button class="btn btn-primary" (click)="closeBookingModal()">Done</button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

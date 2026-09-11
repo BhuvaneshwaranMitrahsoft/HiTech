@@ -1,0 +1,122 @@
+<header class="site-header">
+  <div class="container header-content">
+    <!-- Brand Logo -->
+    <a routerLink="/" class="brand-logo" (click)="closeMobileMenu()">
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
+          <path d="M12 18h.01"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Hi<span class="brand-accent">Tech</span></span>
+        <span class="brand-tag">Mobiles & Spares</span>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation Links -->
+    <nav class="desktop-nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Dashboard
+      </a>
+      <a routerLink="/products" routerLinkActive="active" class="nav-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Products
+      </a>
+      <a routerLink="/services" routerLinkActive="active" class="nav-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Book Service
+      </a>
+      <a routerLink="/register-shop" routerLinkActive="active" class="nav-link badge-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7"/></svg>
+        Register Shop
+        <span class="micro-badge">Wholesale</span>
+      </a>
+    </nav>
+
+    <!-- Header Actions (Fav, Cart, Portal) -->
+    <div class="header-actions">
+      <!-- Favourites Link -->
+      <a routerLink="/favourites" class="action-btn" title="Saved Favourites">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+        </svg>
+        @if (favService.count() > 0) {
+          <span class="count-bubble count-fav">{{ favService.count() }}</span>
+        }
+      </a>
+
+      <!-- Cart Link -->
+      <a routerLink="/cart" class="action-btn cart-btn" title="View Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+        </svg>
+        @if (cartService.totalCount() > 0) {
+          <span class="count-bubble count-cart">{{ cartService.totalCount() }}</span>
+        }
+        @if (cartService.subtotal() > 0) {
+          <span class="cart-total-preview">₹{{ cartService.finalTotal() | number }}</span>
+        }
+      </a>
+
+      <!-- Authentication / Portal Trigger -->
+      @if (authService.isAuthenticated()) {
+        <div class="auth-pill-container">
+          @if (authService.isAdmin()) {
+            <a routerLink="/admin" class="role-pill pill-admin" title="Go to Admin Panel">
+              <span class="dot-live"></span>
+              Admin
+            </a>
+          } @else if (authService.isShopOwner()) {
+            <a routerLink="/owner" class="role-pill pill-owner" title="Shop Owner Portal">
+              <span class="dot-live"></span>
+              Shop Partner
+            </a>
+          }
+          <button (click)="authService.logout()" class="btn-logout" title="Sign Out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+          </button>
+        </div>
+      } @else {
+        <a routerLink="/auth/login" class="btn btn-sm btn-outline portal-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
+          Admin / Owner
+        </a>
+      }
+
+      <!-- Mobile Hamburger Button -->
+      <button class="mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        @if (!mobileMenuOpen) {
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        } @else {
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer Menu -->
+  @if (mobileMenuOpen) {
+    <div class="mobile-drawer animate-fade-in">
+      <nav class="mobile-nav">
+        <a routerLink="/" (click)="closeMobileMenu()" class="mobile-link">Dashboard</a>
+        <a routerLink="/products" (click)="closeMobileMenu()" class="mobile-link">Products & Mobiles</a>
+        <a routerLink="/services" (click)="closeMobileMenu()" class="mobile-link">Service Booking</a>
+        <a routerLink="/register-shop" (click)="closeMobileMenu()" class="mobile-link">Register Shop (Wholesale)</a>
+        <a routerLink="/favourites" (click)="closeMobileMenu()" class="mobile-link">Favourites ({{ favService.count() }})</a>
+        <a routerLink="/cart" (click)="closeMobileMenu()" class="mobile-link">Cart ({{ cartService.totalCount() }})</a>
+        @if (!authService.isAuthenticated()) {
+          <a routerLink="/auth/login" (click)="closeMobileMenu()" class="mobile-link portal-highlight">Admin / Shop Owner Login</a>
+        } @else {
+          @if (authService.isAdmin()) {
+            <a routerLink="/admin" (click)="closeMobileMenu()" class="mobile-link portal-highlight">Admin Dashboard</a>
+          } @else {
+            <a routerLink="/owner" (click)="closeMobileMenu()" class="mobile-link portal-highlight">Shop Owner Dashboard</a>
+          }
+          <button (click)="authService.logout(); closeMobileMenu()" class="mobile-link logout-link">Log Out</button>
+        }
+      </nav>
+    </div>
+  }
+</header>

@@ -1,0 +1,86 @@
+<div class="otp-page container section-padding">
+  <div class="otp-card glass-panel animate-fade-in">
+    <div class="otp-shield-icon">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>
+    </div>
+
+    <span class="badge badge-cyan">Two-Factor Authentication</span>
+    <h1 class="otp-title">Enter 6-Digit Verification Code</h1>
+
+    @if (authService.otpState(); as state) {
+      <p class="otp-instruction">
+        We sent an authentication code to <strong>{{ state.email }}</strong>. Enter it below to unlock the
+        <strong>{{ state.role === 'admin' ? 'Admin Dashboard' : 'Shop Owner Workspace' }}</strong>.
+      </p>
+    }
+
+    <!-- 1-Minute Live Countdown Indicator -->
+    <div class="timer-badge" [class.expired]="secondsRemaining === 0">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      @if (secondsRemaining > 0) {
+        <span>Expires in: <strong>00:{{ secondsRemaining < 10 ? '0' + secondsRemaining : secondsRemaining }}</strong> (1 min limit)</span>
+      } @else {
+        <span class="expired-text">OTP Expired. Please click Resend below.</span>
+      }
+    </div>
+
+    <!-- Simulated Mode Helper (Testing Helper) -->
+    @if (authService.lastSimulatedOtp(); as testCode) {
+      <div class="test-mode-banner glass-panel animate-fade-in">
+        <span class="test-tag">Testing / Dev Mode Active:</span>
+        <span>Generated OTP is: <strong>{{ testCode }}</strong></span>
+        <button type="button" class="btn btn-sm btn-outline auto-fill-btn" (click)="fillCode(testCode)">
+          Click to Auto-Fill
+        </button>
+      </div>
+    }
+
+    <!-- 6-Box OTP Input Grid -->
+    <div class="otp-boxes-grid">
+      @for (d of otpDigits; track $index) {
+        <input
+          [id]="'otp-input-' + $index"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          class="otp-digit-box"
+          [value]="otpDigits[$index]"
+          (input)="onDigitInput($event, $index)"
+          (keydown)="onKeyDown($event, $index)"
+          [disabled]="secondsRemaining === 0"
+          autocomplete="off" />
+      }
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary btn-lg verify-btn"
+      (click)="verifyOtp()"
+      [disabled]="isVerifying || secondsRemaining === 0">
+      @if (isVerifying) {
+        Verifying Security Key...
+      } @else {
+        Verify & Access Portal
+      }
+    </button>
+
+    <div class="resend-row">
+      <span>Didn't receive the code?</span>
+      <button
+        type="button"
+        class="resend-link-btn"
+        (click)="resendOtp()"
+        [disabled]="isResending || secondsRemaining > 15">
+        @if (isResending) {
+          Generating...
+        } @else {
+          Resend OTP {{ secondsRemaining > 15 ? '(' + (secondsRemaining - 15) + 's)' : '' }}
+        }
+      </button>
+    </div>
+
+    <div class="cancel-row">
+      <a routerLink="/auth/login" class="back-link">← Return to Login</a>
+    </div>
+  </div>
+</div>

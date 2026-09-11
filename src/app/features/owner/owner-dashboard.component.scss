@@ -1,0 +1,156 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2.5rem;
+  margin-bottom: 3.5rem;
+  border-color: rgba(139, 92, 246, 0.3);
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+.partner-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .shop-avatar {
+    width: 100px;
+    height: 75px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    border: 2px solid rgba(139, 92, 246, 0.4);
+  }
+
+  .badge-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .shop-name {
+    font-size: 1.85rem;
+    font-weight: 800;
+  }
+
+  .location-txt {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin: 0.25rem 0;
+  }
+
+  .owner-txt {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+  }
+}
+
+.partner-action-box {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.section-title-wrap {
+  margin-bottom: 1.75rem;
+
+  h2 {
+    font-size: 1.6rem;
+    margin: 0.4rem 0 0.2rem;
+  }
+
+  .sub {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+.bulk-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3.5rem;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bulk-item-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+
+  .thumb-box {
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+
+    img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+  }
+
+  .bulk-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    h4 {
+      font-size: 0.95rem;
+      margin: 0.35rem 0 0.5rem;
+      line-height: 1.35;
+    }
+
+    .pricing-comparison {
+      margin-bottom: 1rem;
+
+      .retail-p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-decoration: line-through;
+      }
+
+      .wholesale-p {
+        font-size: 0.95rem;
+        color: #c084fc;
+      }
+    }
+
+    .add-bulk-btn {
+      margin-top: auto;
+      width: 100%;
+    }
+  }
+}
+
+.orders-history-section {
+  padding: 2rem;
+
+  .orders-title {
+    font-size: 1.35rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .empty-txt {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+}

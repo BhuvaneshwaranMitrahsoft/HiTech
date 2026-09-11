@@ -1,0 +1,98 @@
+<div class="owner-page container section-padding">
+  <!-- Shop Partner Profile Banner -->
+  <div class="profile-card glass-panel animate-fade-in">
+    <div class="partner-meta">
+      @if (currentOwner?.shopPhoto) {
+        <img [src]="currentOwner?.shopPhoto" [alt]="currentOwner?.shopName" class="shop-avatar" />
+      }
+      <div>
+        <div class="badge-row">
+          <span class="badge badge-purple">Verified Wholesale Outlet</span>
+          <span class="badge badge-success">{{ currentOwner?.bulkDiscountTier || 'Gold (15% OFF)' }}</span>
+        </div>
+        <h1 class="shop-name">{{ currentOwner?.shopName || 'Retail Partner Hub' }}</h1>
+        <p class="location-txt">📍 {{ currentOwner?.location }}</p>
+        <p class="owner-txt">Proprietor: <strong>{{ currentOwner?.ownerName }}</strong> • {{ currentOwner?.email }}</p>
+      </div>
+    </div>
+
+    <div class="partner-action-box">
+      <a routerLink="/products" class="btn btn-primary btn-lg">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/></svg>
+        Shop Catalog with 15% OFF
+      </a>
+      <a routerLink="/cart" class="btn btn-secondary btn-lg">
+        Bulk Cart ({{ cartService.totalCount() }})
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Bulk Restock Recommendations -->
+  <div class="section-title-wrap">
+    <div>
+      <span class="badge badge-cyan">Fast Dispatch Restock</span>
+      <h2>Popular Fast-Moving Wholesale Items</h2>
+      <p class="sub">Add standardized lots (5 units per box) directly to your wholesale cart with 1 click.</p>
+    </div>
+  </div>
+
+  <div class="bulk-grid">
+    @for (item of dataService.allProducts().slice(0, 4); track item.id) {
+      <div class="bulk-item-card glass-card">
+        <div class="thumb-box">
+          <img [src]="item.image" [alt]="item.name" />
+        </div>
+        <div class="bulk-body">
+          <span class="badge badge-brand">{{ item.brand }}</span>
+          <h4>{{ item.name }}</h4>
+
+          <div class="pricing-comparison">
+            <div class="retail-p">MRP: ₹{{ item.price | number }}</div>
+            <div class="wholesale-p">Partner Price: <strong>₹{{ (item.price * 0.85) | number:'1.0-0' }}</strong></div>
+          </div>
+
+          <button class="btn btn-primary btn-sm add-bulk-btn" (click)="quickAddBulk(item, 5)" [disabled]="!item.inStock">
+            + Add Lot of 5 Units
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- My Wholesale Orders History -->
+  <div class="orders-history-section glass-panel">
+    <h3 class="orders-title">My Recent Wholesale Orders</h3>
+    @if (myOrders.length > 0) {
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Order Date</th>
+              <th>Items Ordered</th>
+              <th>Total (After 15% Discount)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ord of myOrders; track ord.id) {
+              <tr>
+                <td><strong>#{{ ord.orderNumber }}</strong></td>
+                <td>{{ ord.createdAt }}</td>
+                <td>
+                  @for (it of ord.items; track it.productId) {
+                    <div>{{ it.name }} (x{{ it.quantity }})</div>
+                  }
+                </td>
+                <td><strong class="text-gradient">₹{{ ord.totalAmount | number }}</strong></td>
+                <td><span class="badge badge-cyan">{{ ord.status }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="empty-txt">You haven't placed any bulk wholesale orders yet. Click "Shop Catalog" above to place your first order.</p>
+    }
+  </div>
+</div>

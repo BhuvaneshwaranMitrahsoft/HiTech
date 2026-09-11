@@ -1,0 +1,85 @@
+<div class="products-page container section-padding">
+  <!-- Page Header -->
+  <div class="page-title-area">
+    <div>
+      <span class="badge badge-cyan">Complete Hardware Store</span>
+      <h1 class="page-title">Smartphones & Mobile Accessories</h1>
+      <p class="page-subtitle">Shop 100% genuine products with manufacturer warranty and express shipping.</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-box glass-panel">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Search iPhones, GaN chargers, earbuds, cases..."
+        class="search-input" />
+      @if (searchQuery) {
+        <button class="clear-search-btn" (click)="searchQuery = ''">✕</button>
+      }
+    </div>
+  </div>
+
+  <!-- Filters & Sorting Bar -->
+  <div class="filter-sort-bar glass-panel">
+    <!-- Category Tabs -->
+    <div class="cat-pill-group">
+      <button class="pill-btn" [class.active]="selectedCategory === 'all'" (click)="selectedCategory = 'all'; selectedSubCategory = 'all'">
+        All ({{ dataService.allProducts().length }})
+      </button>
+      <button class="pill-btn" [class.active]="selectedCategory === 'phone'" (click)="selectedCategory = 'phone'; selectedSubCategory = 'all'">
+        Phones ({{ dataService.products().length }})
+      </button>
+      <button class="pill-btn" [class.active]="selectedCategory === 'accessory'" (click)="selectedCategory = 'accessory'">
+        Accessories ({{ dataService.accessories().length }})
+      </button>
+    </div>
+
+    <!-- Subcategories (Only if accessories selected or all) -->
+    @if (selectedCategory === 'accessory') {
+      <div class="subcat-select-wrap">
+        <select [(ngModel)]="selectedSubCategory" class="filter-select">
+          <option value="all">All Accessory Types</option>
+          @for (sub of subCategories; track sub) {
+            <option [value]="sub">{{ sub }}</option>
+          }
+        </select>
+      </div>
+    }
+
+    <div class="right-controls">
+      <label class="stock-checkbox">
+        <input type="checkbox" [(ngModel)]="inStockOnly" />
+        <span>In Stock Only</span>
+      </label>
+
+      <div class="sort-wrap">
+        <span class="sort-label">Sort:</span>
+        <select [(ngModel)]="sortBy" class="filter-select">
+          <option value="featured">Featured First</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating">Highest Rated</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Results Grid -->
+  @if (filteredProducts.length > 0) {
+    <div class="products-grid animate-fade-in">
+      @for (item of filteredProducts; track item.id) {
+        <app-product-card [product]="item"></app-product-card>
+      }
+    </div>
+  } @else {
+    <!-- Empty Search State -->
+    <div class="empty-results glass-panel animate-fade-in">
+      <div class="empty-icon">🔍</div>
+      <h3>No products matched your criteria</h3>
+      <p>Try searching for a different keyword or clearing your active filters.</p>
+      <button class="btn btn-primary" (click)="resetFilters()">Reset All Filters</button>
+    </div>
+  }
+</div>

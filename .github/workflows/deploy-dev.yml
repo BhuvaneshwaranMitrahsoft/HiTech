@@ -1,0 +1,45 @@
+name: Deploy to Render (Development)
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy to Dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Angular Application (Dev Configuration)
+        run: npm run build -- --configuration=development
+
+      - name: Trigger Render Dev Deployment Hook
+        if: env.RENDER_DEV_DEPLOY_HOOK != ''
+        env:
+          RENDER_DEV_DEPLOY_HOOK: ${{ secrets.RENDER_DEV_DEPLOY_HOOK }}
+        run: |
+          curl -X POST "$RENDER_DEV_DEPLOY_HOOK"
+
+      - name: Alternative Render API Deploy
+        if: env.RENDER_API_KEY != '' && env.RENDER_DEV_SERVICE_ID != ''
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_DEV_SERVICE_ID: ${{ secrets.RENDER_DEV_SERVICE_ID }}
+        run: |
+          curl -X POST "https://api.render.com/v1/services/$RENDER_DEV_SERVICE_ID/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json"

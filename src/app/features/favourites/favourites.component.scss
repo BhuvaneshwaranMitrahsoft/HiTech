@@ -1,0 +1,151 @@
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+
+  .page-title {
+    font-size: 2.3rem;
+    font-weight: 800;
+    margin-top: 0.4rem;
+  }
+}
+
+.badge-pink {
+  background: rgba(236, 72, 153, 0.15);
+  color: #f472b6;
+  border: 1px solid rgba(236, 72, 153, 0.3);
+}
+
+.fav-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fav-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+
+  .remove-fav-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--accent-danger);
+    }
+  }
+
+  .img-wrap {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 0;
+
+    img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .card-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .item-name {
+      font-size: 1rem;
+      margin: 0.35rem 0 0.2rem;
+      line-height: 1.35;
+
+      a {
+        color: #fff;
+        &:hover { color: var(--primary-cyan); }
+      }
+    }
+
+    .item-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+
+      .price {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--primary-cyan);
+      }
+
+      .original-price {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-decoration: line-through;
+      }
+    }
+
+    .action-footer {
+      margin-top: auto;
+
+      .move-btn {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.empty-fav {
+  text-align: center;
+  padding: 4.5rem 2rem;
+  max-width: 500px;
+  margin: 2rem auto;
+
+  .heart-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.35rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+}

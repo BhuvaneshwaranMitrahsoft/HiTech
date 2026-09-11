@@ -1,0 +1,176 @@
+<div class="cart-page container section-padding">
+  <div class="page-header">
+    <div>
+      <span class="badge badge-cyan">Checkout Pipeline</span>
+      <h1 class="page-title">Shopping Cart ({{ cartService.totalCount() }} items)</h1>
+    </div>
+
+    @if (cartService.items().length > 0) {
+      <button class="btn btn-secondary btn-sm" (click)="clearCart()">Clear Cart</button>
+    }
+  </div>
+
+  @if (cartService.items().length > 0) {
+    <div class="cart-layout-grid">
+      <!-- Left Column: Items Table / List -->
+      <div class="items-list-col">
+        <!-- Shop Owner Bulk Discount Notice -->
+        @if (cartService.isBulkMode()) {
+          <div class="bulk-alert glass-panel animate-fade-in">
+            <span class="badge badge-purple">Wholesale Tier</span>
+            <p>You are shopping as a <strong>Verified Shop Partner</strong>. 15% wholesale bulk order discount has been applied to all items.</p>
+          </div>
+        }
+
+        <div class="items-card glass-panel">
+          @for (item of cartService.items(); track item.product.id) {
+            <div class="cart-item-row">
+              <a [routerLink]="['/products', item.product.id]" class="thumb-wrap">
+                <img [src]="item.product.image" [alt]="item.product.name" />
+              </a>
+
+              <div class="item-meta">
+                <span class="badge badge-brand">{{ item.product.brand }}</span>
+                <h3 class="meta-title">
+                  <a [routerLink]="['/products', item.product.id]">{{ item.product.name }}</a>
+                </h3>
+                <span class="unit-price">₹{{ item.selectedPrice | number }} each</span>
+              </div>
+
+              <div class="qty-control">
+                <button class="q-btn" (click)="updateQty(item.product.id, item.quantity - 1)">-</button>
+                <span class="q-val">{{ item.quantity }}</span>
+                <button class="q-btn" (click)="updateQty(item.product.id, item.quantity + 1)">+</button>
+              </div>
+
+              <div class="row-total">
+                ₹{{ (item.selectedPrice * item.quantity) | number }}
+              </div>
+
+              <button class="btn-remove" (click)="removeItem(item.product.id)" title="Remove item">✕</button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right Column: Personal Details & Order Placement -->
+      <div class="checkout-col">
+        <div class="checkout-card glass-panel">
+          <h2 class="summary-title">Order Summary</h2>
+
+          <div class="summary-line">
+            <span>Items Subtotal</span>
+            <span>₹{{ cartService.subtotal() | number }}</span>
+          </div>
+
+          @if (cartService.discountAmount() > 0) {
+            <div class="summary-line discount-line">
+              <span>Wholesale Partner Discount</span>
+              <span>-₹{{ cartService.discountAmount() | number }}</span>
+            </div>
+          }
+
+          <div class="summary-line">
+            <span>Standard Express Delivery</span>
+            @if (cartService.deliveryFee() === 0) {
+              <span class="free-text">FREE</span>
+            } @else {
+              <span>₹{{ cartService.deliveryFee() }}</span>
+            }
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-total-line">
+            <span>Total Payable</span>
+            <span class="total-num">₹{{ cartService.finalTotal() | number }}</span>
+          </div>
+
+          <!-- Mandatory Delivery Personal Details Form -->
+          <div class="checkout-form-area">
+            <h3 class="form-section-title">Delivery Details (Mandatory)</h3>
+            <p class="form-hint">Our fulfillment desk will contact you via phone/WhatsApp to confirm dispatch.</p>
+
+            <form (ngSubmit)="placeOrder()">
+              <div class="form-group">
+                <label>Full Name <span class="required">*</span></label>
+                <input
+                  type="text"
+                  [(ngModel)]="customerForm.name"
+                  name="name"
+                  placeholder="Recipient's Name"
+                  class="form-control"
+                  required />
+              </div>
+
+              <div class="form-group">
+                <label>Mobile Number <span class="required">*</span></label>
+                <input
+                  type="tel"
+                  [(ngModel)]="customerForm.phone"
+                  name="phone"
+                  placeholder="10-digit phone for order SMS / call"
+                  class="form-control"
+                  required />
+              </div>
+
+              <div class="form-group">
+                <label>Delivery Address <span class="required">*</span></label>
+                <textarea
+                  [(ngModel)]="customerForm.address"
+                  name="address"
+                  placeholder="House / Flat No, Street, Landmark, Area, City"
+                  class="form-control"
+                  required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Pincode / Postal Code</label>
+                <input
+                  type="text"
+                  [(ngModel)]="customerForm.pincode"
+                  name="pincode"
+                  placeholder="6-digit Pincode"
+                  class="form-control" />
+              </div>
+
+              <div class="form-group">
+                <label>Email Address (Optional)</label>
+                <input
+                  type="email"
+                  [(ngModel)]="customerForm.email"
+                  name="email"
+                  placeholder="For electronic receipt"
+                  class="form-control" />
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg submit-order-btn"
+                [disabled]="isSubmittingOrder">
+                @if (isSubmittingOrder) {
+                  Processing Order & Emailing Owner...
+                } @else {
+                  Place Order (Cash on Delivery / UPI)
+                }
+              </button>
+
+              <div class="security-badges">
+                <span>🔒 SSL Encrypted</span>
+                <span>•</span>
+                <span>📧 Instant Owner Notification</span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="empty-cart glass-panel animate-fade-in">
+      <div class="cart-icon">🛒</div>
+      <h3>Your Shopping Cart is Empty</h3>
+      <p>Discover flagship phones, authentic spare parts, and accessories today.</p>
+      <a routerLink="/products" class="btn btn-primary btn-lg">Start Shopping</a>
+    </div>
+  }
+</div>
