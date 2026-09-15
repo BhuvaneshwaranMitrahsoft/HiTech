@@ -1,0 +1,9 @@
+services:
+  - type: static
+    name: HiTech
+    buildCommand: npm run build
+    staticPublishPath: ./dist/hi-tech
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
