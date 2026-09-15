@@ -13,13 +13,14 @@ export interface ToastMessage {
 export class ToastService {
   private _toast = signal<ToastMessage | null>(null);
   readonly activeToast = this._toast.asReadonly();
+  private nextId = 1;
   private timer: any = null;
 
   show(message: string, type: 'success' | 'info' | 'warning' | 'danger' = 'info', title?: string, duration: number = 4000): void {
     if (this.timer) clearTimeout(this.timer);
 
     this._toast.set({
-      id: Date.now(),
+      id: this.nextId++,
       message,
       type,
       title

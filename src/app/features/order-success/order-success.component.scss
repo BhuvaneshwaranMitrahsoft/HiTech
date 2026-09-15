@@ -21,8 +21,8 @@
   width: 86px;
   height: 86px;
   border-radius: 50%;
-  background: rgba(0, 242, 254, 0.1);
-  border: 2px solid var(--primary-cyan);
+  background: rgba(var(--primary-accent-rgb), 0.08);
+  border: 2px solid var(--primary-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,21 +48,21 @@
   align-items: center;
   gap: 0.85rem;
   padding: 1rem 1.5rem;
-  background: rgba(0, 242, 254, 0.06);
-  border: 1px solid rgba(0, 242, 254, 0.2);
-  color: #e2e8f0;
+  background: rgba(var(--primary-accent-rgb), 0.05);
+  border: 1px solid rgba(var(--primary-accent-rgb), 0.15);
+  color: var(--text-primary);
   font-size: 0.9rem;
   text-align: left;
   margin-bottom: 2rem;
   width: 100%;
 
   svg {
-    color: var(--primary-cyan);
+    color: var(--primary-accent);
     flex-shrink: 0;
   }
 
   strong {
-    color: var(--primary-cyan);
+    color: var(--primary-accent);
   }
 }
 
@@ -81,7 +81,7 @@
     font-size: 0.875rem;
 
     .r-label { color: var(--text-muted); margin-right: 0.35rem; }
-    .r-val { color: #fff; font-weight: 700; }
+    .r-val { color: var(--text-white); font-weight: 700; }
   }
 
   h4 {
@@ -93,7 +93,7 @@
   .customer-preview {
     margin-bottom: 1.25rem;
     p {
-      color: #cbd5e1;
+      color: var(--text-secondary);
       font-size: 0.88rem;
       margin-bottom: 0.25rem;
     }
@@ -114,7 +114,7 @@
 
       .item-price {
         font-weight: 600;
-        color: var(--primary-cyan);
+        color: var(--primary-accent);
       }
     }
   }
@@ -131,7 +131,7 @@
         font-family: var(--font-display);
         font-size: 1.75rem;
         font-weight: 900;
-        color: var(--primary-cyan);
+        color: var(--primary-accent);
       }
     }
   }

@@ -7,10 +7,11 @@ export const environment = {
     role: 'admin'
   },
   emailJs: {
-    publicKey: 'YOUR_EMAILJS_PUBLIC_KEY',
-    serviceId: 'YOUR_EMAILJS_SERVICE_ID',
-    otpTemplateId: 'YOUR_EMAILJS_OTP_TEMPLATE_ID',
-    orderTemplateId: 'YOUR_EMAILJS_ORDER_TEMPLATE_ID',
+    // Replace these with your actual EmailJS credentials or configure them in the Admin Settings panel
+    publicKey: 'Kqc9idu23mqf3U5BV',
+    serviceId: 'service_sfm8fpa',
+    otpTemplateId: 'testTempleteId',
+    orderTemplateId: 'OrderTempleteId',
     notificationEmail: 'bhuvaneshwaranaj@gmail.com'
   },
   otpExpirySeconds: 60

@@ -9,7 +9,7 @@
   transition: color var(--transition-fast);
 
   &:hover {
-    color: var(--primary-cyan);
+    color: var(--primary-accent);
   }
 }
 
@@ -117,14 +117,14 @@
     .currency {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--primary-cyan);
+      color: var(--primary-accent);
     }
 
     .val {
       font-family: var(--font-display);
       font-size: 2.4rem;
       font-weight: 900;
-      color: var(--primary-cyan);
+      color: var(--primary-accent);
     }
   }
 
@@ -142,7 +142,7 @@
 
     .save-badge {
       font-size: 0.75rem;
-      background: rgba(16, 185, 129, 0.2);
+      background: var(--bg-surface-elevated);
       color: #34d399;
       padding: 0.15rem 0.5rem;
       border-radius: var(--radius-pill);
@@ -183,7 +183,7 @@
 
     .spec-cell {
       padding: 0.75rem 1rem;
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--bg-surface-elevated);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
       font-size: 0.875rem;
@@ -194,7 +194,7 @@
       }
 
       .v {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 600;
       }
     }
@@ -210,7 +210,7 @@
   .qty-selector {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-surface-elevated);
     border: 1px solid var(--border-medium);
     border-radius: var(--radius-sm);
     padding: 0.25rem;
@@ -229,7 +229,7 @@
       border-radius: 4px;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--bg-card-hover);
       }
     }
 
@@ -249,7 +249,7 @@
     width: 48px;
     height: 48px;
     border-radius: var(--radius-sm);
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-surface-elevated);
     border: 1px solid var(--border-medium);
     color: var(--text-muted);
     display: flex;

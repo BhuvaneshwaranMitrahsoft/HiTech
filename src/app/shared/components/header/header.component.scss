@@ -11,6 +11,7 @@
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
+  transition: background-color 0.3s ease;
 }
 
 .header-content {
@@ -29,12 +30,12 @@
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: var(--grad-cyan-blue);
-    color: #030712;
+    background: var(--grad-primary);
+    color: var(--text-on-accent);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+    box-shadow: 0 4px 12px rgba(var(--primary-accent-rgb), 0.3);
     transition: transform 0.3s ease;
   }
 
@@ -56,7 +57,7 @@
   }
 
   .brand-accent {
-    background: var(--grad-cyan-blue);
+    background: var(--grad-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -94,20 +95,20 @@
 
   &:hover {
     color: var(--text-white);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--primary-accent-rgb), 0.06);
   }
 
   &.active {
-    color: var(--primary-cyan);
-    background: rgba(0, 242, 254, 0.08);
+    color: var(--primary-accent);
+    background: rgba(var(--primary-accent-rgb), 0.08);
     font-weight: 600;
   }
 
   .micro-badge {
     font-size: 0.65rem;
     padding: 0.15rem 0.45rem;
-    background: rgba(139, 92, 246, 0.2);
-    color: #c084fc;
+    background: rgba(124, 58, 237, 0.12);
+    color: var(--accent-purple);
     border-radius: 99px;
     font-weight: 700;
     text-transform: uppercase;
@@ -129,14 +130,15 @@
   align-items: center;
   justify-content: center;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   transition: all var(--transition-fast);
+  cursor: pointer;
 
   &:hover {
-    color: var(--text-white);
-    background: rgba(255, 255, 255, 0.09);
-    border-color: var(--border-medium);
+    color: var(--primary-accent);
+    background: rgba(var(--primary-accent-rgb), 0.08);
+    border-color: var(--border-accent);
   }
 
   &.cart-btn {
@@ -148,8 +150,19 @@
   .cart-total-preview {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--primary-cyan);
+    color: var(--primary-accent);
     font-family: var(--font-display);
+  }
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover svg {
+    transform: rotate(15deg);
   }
 }
 
@@ -166,7 +179,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #030712;
 
   &.count-fav {
     background: var(--accent-pink);
@@ -175,8 +187,9 @@
   }
 
   &.count-cart {
-    background: var(--primary-cyan);
-    box-shadow: 0 0 8px rgba(0, 242, 254, 0.5);
+    background: var(--primary-accent);
+    color: var(--text-on-accent);
+    box-shadow: 0 2px 8px rgba(var(--primary-accent-rgb), 0.4);
   }
 }
 
@@ -184,7 +197,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   padding: 0.25rem 0.4rem 0.25rem 0.75rem;
   border-radius: var(--radius-pill);
@@ -206,14 +219,19 @@
   }
 
   &.pill-admin {
-    color: var(--primary-cyan);
-    .dot-live { background: var(--primary-cyan); }
+    color: var(--primary-accent);
+    .dot-live { background: var(--primary-accent); }
   }
 
   &.pill-owner {
-    color: #c084fc;
-    .dot-live { background: #c084fc; }
+    color: var(--accent-purple);
+    .dot-live { background: var(--accent-purple); }
   }
+}
+
+[data-theme="dark"] .role-pill.pill-owner {
+  color: #c084fc;
+  .dot-live { background: #c084fc; }
 }
 
 .btn-logout {
@@ -263,7 +281,7 @@
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
   padding: 1.25rem 1.5rem;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 
   .mobile-nav {
     display: flex;
@@ -276,16 +294,16 @@
     border-radius: var(--radius-sm);
     color: var(--text-primary);
     font-weight: 500;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-surface-elevated);
 
     &:hover {
-      background: rgba(0, 242, 254, 0.08);
-      color: var(--primary-cyan);
+      background: rgba(var(--primary-accent-rgb), 0.08);
+      color: var(--primary-accent);
     }
 
     &.portal-highlight {
-      background: rgba(0, 242, 254, 0.15);
-      color: var(--primary-cyan);
+      background: rgba(var(--primary-accent-rgb), 0.1);
+      color: var(--primary-accent);
       font-weight: 600;
     }
 
@@ -297,4 +315,8 @@
       color: var(--accent-danger);
     }
   }
+}
+
+[data-theme="dark"] .mobile-drawer {
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
 }

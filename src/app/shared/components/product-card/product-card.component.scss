@@ -23,7 +23,7 @@
   gap: 0.35rem;
 
   .badge-brand {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-surface-elevated);
     color: var(--text-primary);
     border: 1px solid var(--border-subtle);
   }
@@ -37,7 +37,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.7);
+  background: var(--bg-surface);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
@@ -54,8 +54,8 @@
 
   &.is-fav {
     color: var(--accent-pink);
-    background: rgba(236, 72, 153, 0.15);
-    border-color: rgba(236, 72, 153, 0.4);
+    background: rgba(236, 72, 153, 0.1);
+    border-color: rgba(236, 72, 153, 0.3);
 
     svg {
       fill: var(--accent-pink);
@@ -71,7 +71,7 @@
   margin: 1.5rem 0 1rem;
   overflow: hidden;
   border-radius: var(--radius-sm);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-surface-elevated);
 
   .product-img {
     max-height: 100%;
@@ -122,11 +122,11 @@
   margin-bottom: 0.25rem;
 
   a {
-    color: #fff;
+    color: var(--text-white);
     transition: color var(--transition-fast);
 
     &:hover {
-      color: var(--primary-cyan);
+      color: var(--primary-accent);
     }
   }
 }
@@ -145,7 +145,7 @@
 
   .spec-pill {
     font-size: 0.725rem;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-surface-elevated);
     border: 1px solid var(--border-subtle);
     padding: 0.15rem 0.45rem;
     border-radius: 4px;
@@ -179,7 +179,7 @@
     font-family: var(--font-display);
     font-size: 1.2rem;
     font-weight: 800;
-    color: var(--primary-cyan);
+    color: var(--primary-accent);
   }
 
   .original-price {

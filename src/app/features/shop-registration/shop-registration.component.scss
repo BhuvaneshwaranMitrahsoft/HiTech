@@ -40,7 +40,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--primary-cyan);
+  color: var(--primary-accent);
   margin-bottom: 1.25rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border-subtle);
@@ -49,7 +49,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--primary-cyan);
+    background: var(--primary-accent);
   }
 
   &.optional-tag {
@@ -82,11 +82,11 @@
   padding: 1.75rem;
   text-align: center;
   transition: all var(--transition-fast);
-  background: rgba(15, 23, 42, 0.5);
+  background: var(--bg-surface);
 
   &:hover {
-    border-color: var(--primary-cyan);
-    background: rgba(0, 242, 254, 0.04);
+    border-color: var(--primary-accent);
+    background: rgba(var(--primary-accent-rgb), 0.04);
   }
 
   .file-input {
@@ -108,7 +108,7 @@
     pointer-events: none;
 
     svg {
-      color: var(--primary-cyan);
+      color: var(--primary-accent);
       margin-bottom: 0.25rem;
     }
 
@@ -144,12 +144,12 @@
 
       &:hover {
         transform: scale(1.05);
-        border-color: var(--primary-cyan);
+        border-color: var(--primary-accent);
       }
 
       &.selected {
-        border-color: var(--primary-cyan);
-        box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 10px rgba(var(--primary-accent-rgb), 0.3);
       }
     }
   }
@@ -169,7 +169,7 @@
     left: 0.5rem;
     background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(4px);
-    color: var(--primary-cyan);
+    color: var(--primary-accent);
     font-size: 0.75rem;
     font-weight: 600;
     padding: 0.2rem 0.5rem;
@@ -250,7 +250,7 @@
       background: rgba(255, 255, 255, 0.08);
       padding: 0.2rem 0.6rem;
       border-radius: 4px;
-      color: var(--primary-cyan);
+      color: var(--primary-accent);
       font-weight: 600;
     }
   }

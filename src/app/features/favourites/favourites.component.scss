@@ -48,7 +48,7 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-surface-elevated);
     border: none;
     color: var(--text-muted);
     cursor: pointer;
@@ -87,8 +87,8 @@
       line-height: 1.35;
 
       a {
-        color: #fff;
-        &:hover { color: var(--primary-cyan); }
+        color: var(--text-white);
+        &:hover { color: var(--primary-accent); }
       }
     }
 
@@ -108,7 +108,7 @@
         font-family: var(--font-display);
         font-size: 1.2rem;
         font-weight: 800;
-        color: var(--primary-cyan);
+        color: var(--primary-accent);
       }
 
       .original-price {

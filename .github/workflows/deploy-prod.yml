@@ -6,26 +6,16 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
-    name: Build & Deploy to Production
+  quality-gate:
+    name: Quality Gate
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy to Production
+    needs: quality-gate
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build Angular Application (Production)
-        run: npm run build -- --configuration=production
-
       - name: Trigger Render Production Deploy Hook
         if: env.RENDER_PROD_DEPLOY_HOOK != ''
         env:

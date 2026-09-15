@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
 import { FavouritesService } from '../../../core/services/favourites.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -16,6 +17,7 @@ export class HeaderComponent {
   cartService = inject(CartService);
   favService = inject(FavouritesService);
   authService = inject(AuthService);
+  themeService = inject(ThemeService);
 
   mobileMenuOpen = false;
 
@@ -25,5 +27,9 @@ export class HeaderComponent {
 
   closeMobileMenu(): void {
     this.mobileMenuOpen = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }
