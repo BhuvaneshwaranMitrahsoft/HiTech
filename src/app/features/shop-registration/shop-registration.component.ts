@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { DataService } from '../../core/services/data.service';
 import { ToastService } from '../../core/services/toast.service';
+import { EmailService } from '../../core/services/email.service';
 import { ShopOwner, ShopRegistrationForm } from '../../core/models/shop-owner.model';
 
 @Component({
@@ -16,6 +17,7 @@ import { ShopOwner, ShopRegistrationForm } from '../../core/models/shop-owner.mo
 export class ShopRegistrationComponent {
   dataService = inject(DataService);
   toastService = inject(ToastService);
+  emailService = inject(EmailService);
   private router = inject(Router);
 
   isSubmitting = false;
@@ -60,24 +62,34 @@ export class ShopRegistrationComponent {
     }
   }
 
-  submitRegistration(): void {
+  async submitRegistration(): Promise<void> {
     if (!this.form.shopName.trim() || !this.form.ownerName.trim() || !this.form.location.trim() || !this.form.shopPhoto.trim()) {
       this.toastService.show('Shop Name, Owner Name, Location, and Shop Photo are mandatory.', 'warning');
       return;
     }
 
-    if (!this.form.email.trim()) {
-      this.form.email = `shop_${Date.now().toString().slice(-4)}@hitech.com`;
+    if (!this.form.email.trim() || !this.form.email.includes('@')) {
+      this.toastService.show('A valid business email address is required for application review and credential delivery.', 'warning');
+      return;
+    }
+
+    if (!this.form.phone.trim() || this.form.phone.trim().length < 10) {
+      this.toastService.show('Please provide a valid 10-digit mobile / WhatsApp number.', 'warning');
+      return;
     }
 
     this.isSubmitting = true;
     try {
       const newOwner = this.dataService.registerNewShopOwner(this.form);
       this.registeredShop = newOwner;
+
+      // Dispatch applicant acknowledgement and admin notification emails
+      await this.emailService.sendShopRegistrationEmails(this.form, newOwner);
+
       this.isRegistered = true;
-      this.toastService.show('Shop registered successfully! Credentials generated.', 'success', 'Registration Approved');
+      this.toastService.show('Application submitted! Your wholesale partner request is pending admin verification.', 'success', 'Application Received');
     } catch (e) {
-      this.toastService.show('Failed to register shop', 'danger');
+      this.toastService.show('Failed to register shop. Please try again.', 'danger');
     } finally {
       this.isSubmitting = false;
     }

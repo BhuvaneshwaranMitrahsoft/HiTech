@@ -172,6 +172,7 @@ export class AuthService {
         name: owner ? owner.ownerName : 'Shop Owner',
         shopOwnerId: owner?.id,
         shopName: owner?.shopName,
+        bulkDiscountPercent: this.dataService.getDiscountPercent(owner?.bulkDiscountTier),
         loginTime: new Date().toISOString()
       };
     }

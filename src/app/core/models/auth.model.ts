@@ -8,6 +8,7 @@ export interface AuthSession {
   token?: string;
   shopOwnerId?: string;
   shopName?: string;
+  bulkDiscountPercent?: number;
   loginTime: string;
 }
 

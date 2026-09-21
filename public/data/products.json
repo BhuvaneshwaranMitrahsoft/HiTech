@@ -130,5 +130,159 @@
     "inStock": true,
     "isFeatured": false,
     "description": "IP68 water protection, 120W HyperCharge, curved AMOLED display and flagship 200MP OIS camera."
+  },
+  {
+    "id": "prod-7",
+    "name": "iPhone 16 Pro 128GB (Desert Titanium)",
+    "brand": "Apple",
+    "category": "phone",
+    "subCategory": "Flagship Smartphone",
+    "price": 119900,
+    "originalPrice": 129900,
+    "rating": 4.9,
+    "reviewsCount": 164,
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "8 GB",
+      "storage": "128 GB",
+      "display": "6.3\" Super Retina XDR OLED ProMotion",
+      "battery": "3582 mAh MagSafe Fast Charge",
+      "camera": "48MP Fusion + 48MP Ultra Wide + 5x Tele"
+    },
+    "inStock": true,
+    "isFeatured": true,
+    "description": "Grade 5 titanium design with A18 Pro chip, groundbreaking Camera Control tactile button, and Apple Intelligence."
+  },
+  {
+    "id": "prod-8",
+    "name": "Apple iPhone 15 128GB (Black)",
+    "brand": "Apple",
+    "category": "phone",
+    "subCategory": "Smartphone",
+    "price": 69900,
+    "originalPrice": 79900,
+    "rating": 4.8,
+    "reviewsCount": 420,
+    "image": "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "6 GB",
+      "storage": "128 GB",
+      "display": "6.1\" Super Retina XDR with Dynamic Island",
+      "battery": "3349 mAh All-Day Battery",
+      "camera": "48MP Main with 2x Telephoto + 12MP Ultra Wide"
+    },
+    "inStock": true,
+    "isFeatured": false,
+    "description": "Dynamic Island, color-infused back glass, A16 Bionic chip, and 48MP main camera with 2x telephoto."
+  },
+  {
+    "id": "prod-9",
+    "name": "Samsung Galaxy Z Fold 6 512GB",
+    "brand": "Samsung",
+    "category": "phone",
+    "subCategory": "Foldable Flagship",
+    "price": 176999,
+    "originalPrice": 189999,
+    "rating": 4.8,
+    "reviewsCount": 115,
+    "image": "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "12 GB",
+      "storage": "512 GB",
+      "display": "7.6\" Foldable Dynamic AMOLED 2X 120Hz",
+      "battery": "4400 mAh 25W Fast Charging",
+      "camera": "50MP + 12MP + 10MP Triple ProVisual"
+    },
+    "inStock": true,
+    "isFeatured": true,
+    "description": "Ultra-slim, lighter foldable with Galaxy AI live interpreter, dual screen productivity, and Armor Aluminum frame."
+  },
+  {
+    "id": "prod-10",
+    "name": "Samsung Galaxy A55 5G 128GB",
+    "brand": "Samsung",
+    "category": "phone",
+    "subCategory": "Premium Mid-Range",
+    "price": 36999,
+    "originalPrice": 42999,
+    "rating": 4.6,
+    "reviewsCount": 380,
+    "image": "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "8 GB",
+      "storage": "128 GB",
+      "display": "6.6\" FHD+ Super AMOLED 120Hz",
+      "battery": "5000 mAh Fast Charge",
+      "camera": "50MP OIS + 12MP + 5MP Triple"
+    },
+    "inStock": true,
+    "isFeatured": false,
+    "description": "Metal frame design, Samsung Knox Vault security, IP67 dust/water resistance, and vibrant 120Hz Super AMOLED."
+  },
+  {
+    "id": "prod-11",
+    "name": "OnePlus Nord 4 5G 256GB",
+    "brand": "OnePlus",
+    "category": "phone",
+    "subCategory": "Performance Mid-Range",
+    "price": 32999,
+    "originalPrice": 35999,
+    "rating": 4.7,
+    "reviewsCount": 240,
+    "image": "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "12 GB",
+      "storage": "256 GB",
+      "display": "6.74\" 1.5K 120Hz AMOLED ProXDR",
+      "battery": "5500 mAh 100W SUPERVOOC",
+      "camera": "50MP Sony LYT-600 OIS + 8MP Ultra Wide"
+    },
+    "inStock": true,
+    "isFeatured": false,
+    "description": "Only 5G smartphone with an ultra-sleek all-metal unibody, Snapdragon 7+ Gen 3, and monumental 5500 mAh battery."
+  },
+  {
+    "id": "prod-12",
+    "name": "Xiaomi 14 Ultra 512GB (Black)",
+    "brand": "Xiaomi",
+    "category": "phone",
+    "subCategory": "Leica Camera Flagship",
+    "price": 99999,
+    "originalPrice": 119999,
+    "rating": 4.9,
+    "reviewsCount": 98,
+    "image": "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "16 GB",
+      "storage": "512 GB",
+      "display": "6.73\" WQHD+ AMOLED 120Hz LTPO",
+      "battery": "5000 mAh 90W HyperCharge",
+      "camera": "Leica Quad 50MP 1-inch LYT-900 with Stepless Aperture"
+    },
+    "inStock": true,
+    "isFeatured": false,
+    "description": "The Pinnacle of Mobile Imagery with Leica Summilux optical lens, 1-inch variable aperture, and Snapdragon 8 Gen 3."
+  },
+  {
+    "id": "prod-13",
+    "name": "iQOO 12 5G 256GB (Legend Edition)",
+    "brand": "Vivo",
+    "category": "phone",
+    "subCategory": "Gaming & Speed Flagship",
+    "price": 52999,
+    "originalPrice": 59999,
+    "rating": 4.8,
+    "reviewsCount": 290,
+    "image": "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80",
+    "specs": {
+      "ram": "12 GB",
+      "storage": "256 GB",
+      "display": "6.78\" 1.5K 144Hz LTPO AMOLED 3000nits",
+      "battery": "5000 mAh 120W FlashCharge",
+      "camera": "50MP 1/1.3\" Astro OIS + 50MP UW + 64MP Periscope 100X"
+    },
+    "inStock": true,
+    "isFeatured": false,
+    "description": "Snapdragon 8 Gen 3 with dedicated Q1 supercomputing chip, 144Hz display, and 64MP 3x periscope telephoto."
   }
 ]

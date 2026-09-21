@@ -79,6 +79,10 @@
   @media (max-width: 768px) {
     font-size: 2.35rem;
   }
+
+  @media (max-width: 480px) {
+    font-size: 1.8rem;
+  }
 }
 
 .hero-subtitle {
@@ -89,7 +93,7 @@
   margin: 0 auto 2.25rem;
 
   @media (max-width: 768px) {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 }
 
@@ -100,6 +104,15 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 3.5rem;
+
+  @media (max-width: 500px) {
+    flex-direction: column;
+    width: 100%;
+
+    .btn {
+      width: 100%;
+    }
+  }
 }
 
 .trust-stats-grid {
@@ -263,14 +276,17 @@
 
   @media (max-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
   }
 
   @media (max-width: 850px) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
   @media (max-width: 540px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
   }
 }
 

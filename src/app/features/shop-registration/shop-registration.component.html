@@ -102,24 +102,26 @@
           </div>
 
           <div class="form-group">
-            <label>Contact Phone (Optional)</label>
+            <label>Contact Phone <span class="required">*</span></label>
             <input
               type="tel"
               [(ngModel)]="form.phone"
               name="phone"
-              placeholder="Owner's WhatsApp / Phone"
-              class="form-control" />
+              placeholder="10-digit mobile or WhatsApp number"
+              class="form-control"
+              required />
           </div>
         </div>
 
         <div class="form-group">
-          <label>Business Email Address (Optional)</label>
+          <label>Business Email Address <span class="required">*</span></label>
           <input
             type="email"
             [(ngModel)]="form.email"
             name="email"
-            placeholder="Used for login and wholesale invoices"
-            class="form-control" />
+            placeholder="Official email for verification, invoices, and login"
+            class="form-control"
+            required />
         </div>
 
         <div class="form-group">
@@ -134,30 +136,40 @@
 
         <button type="submit" class="btn btn-purple btn-lg submit-reg-btn" [disabled]="isSubmitting">
           @if (isSubmitting) {
-            Submitting Registration...
+            Submitting Application...
           } @else {
             Submit Shop Registration
           }
         </button>
       </form>
     } @else {
-      <!-- Registration Success Confirmation & Credentials Panel -->
+      <!-- Registration Success Confirmation & Verification Pending Notice -->
       <div class="reg-success-container animate-fade-in">
-        <div class="success-icon-badge">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="success-icon-badge" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
 
-        <span class="badge badge-success">Application Approved</span>
-        <h2 class="reg-success-title">{{ registeredShop?.shopName }} is Registered!</h2>
+        <span class="badge badge-warning">Verification Pending</span>
+        <h2 class="reg-success-title">Application Submitted: {{ registeredShop?.shopName }}</h2>
         <p class="reg-success-desc">
-          Your retail shop has been successfully enrolled in our wholesale supplier network. You can now log in to the <strong>Shop Owner Portal</strong> using your auto-generated credentials to place bulk discounted orders.
+          Thank you for registering with HiTech! Your retail shop application and storefront photo have been received and forwarded to the administrator. An acknowledgement has also been dispatched to your email.
         </p>
 
-        <!-- Credentials Card -->
+        <!-- Application Summary Card -->
         <div class="credentials-card glass-card">
           <div class="cred-header">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>Your Generated Shop Partner Credentials</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>Application Summary</span>
+          </div>
+
+          <div class="cred-item">
+            <span class="c-label">Registered Shop:</span>
+            <strong class="c-val" style="color: var(--text-white);">{{ registeredShop?.shopName }}</strong>
+          </div>
+
+          <div class="cred-item">
+            <span class="c-label">Proprietor:</span>
+            <span class="c-val">{{ registeredShop?.ownerName }}</span>
           </div>
 
           <div class="cred-item">
@@ -166,26 +178,21 @@
           </div>
 
           <div class="cred-item">
-            <span class="c-label">Default Access Password:</span>
-            <code class="c-val">{{ registeredShop?.defaultPasswordPlain }}</code>
-          </div>
-
-          <div class="cred-item">
-            <span class="c-label">Assigned Bulk Discount:</span>
-            <span class="badge badge-purple">{{ registeredShop?.bulkDiscountTier }}</span>
+            <span class="c-label">Application Status:</span>
+            <span class="badge badge-warning">Pending Admin Review</span>
           </div>
 
           <p class="cred-note">
-            💡 The admin will also authenticate and share this access with you. You can verify via the 1-minute OTP login on the portal.
+            ⏳ <strong>What happens next?</strong> Our admin will verify your storefront and GST details. Once approved, your temporary password and wholesale tier will be activated and sent directly to your registered email.
           </p>
         </div>
 
         <div class="success-actions">
-          <a routerLink="/auth/login" [queryParams]="{role: 'shopowner'}" class="btn btn-primary btn-lg">
-            Login to Shop Owner Portal
+          <a routerLink="/" class="btn btn-secondary btn-lg">
+            Return to Home
           </a>
-          <a routerLink="/products" class="btn btn-secondary btn-lg">
-            Browse Catalog
+          <a routerLink="/products" class="btn btn-primary btn-lg">
+            Explore Retail Catalog
           </a>
         </div>
       </div>

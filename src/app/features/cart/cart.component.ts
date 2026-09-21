@@ -37,7 +37,8 @@ export class CartComponent {
     // If shop owner is logged in, prefill information and enable bulk discount mode!
     const session = this.authService.currentSession();
     if (session && session.role === 'shopowner') {
-      this.cartService.setBulkMode(true, 15); // 15% wholesale discount
+      const discount = session.bulkDiscountPercent || 10;
+      this.cartService.setBulkMode(true, discount);
       this.customerForm.name = session.name;
       this.customerForm.email = session.email;
     } else {

@@ -12,6 +12,8 @@ export interface ServiceBookingItem {
   includedPoints: string[];
 }
 
+export type ServiceFulfillmentMode = 'home_pickup' | 'parcel' | 'store_handover';
+
 export interface ServiceBookingRequest {
   id: string;
   serviceId: string;
@@ -21,6 +23,10 @@ export interface ServiceBookingRequest {
   customerName: string;
   customerPhone: string;
   customerAddress: string;
+  pincode?: string;
+  distanceKm?: number;
+  pickupEligible?: boolean;
+  fulfillmentMode: ServiceFulfillmentMode;
   preferredDate: string;
   preferredTimeSlot: string;
   estimatedPrice: number;

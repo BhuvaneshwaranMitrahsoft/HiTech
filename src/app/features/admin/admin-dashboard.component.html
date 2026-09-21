@@ -70,11 +70,16 @@
       <div class="panel-header">
         <div>
           <h2 class="panel-title">Product Availability & Stock Control</h2>
-          <p class="panel-desc">Click the toggle switch to immediately set any smartphone or accessory In Stock or Out of Stock.</p>
+          <p class="panel-desc">Add products, edit specifications, or toggle availability. Out-of-stock items are automatically hidden from the public catalog.</p>
         </div>
 
-        <div class="panel-search">
-          <input type="text" [(ngModel)]="searchQuery" placeholder="Filter by product or brand..." class="form-control" />
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <button class="btn btn-primary btn-sm" (click)="openAddProduct()">
+            + Add New Product
+          </button>
+          <div class="panel-search">
+            <input type="text" [(ngModel)]="searchQuery" placeholder="Filter by product, brand, category..." class="form-control" />
+          </div>
         </div>
       </div>
 
@@ -120,9 +125,17 @@
                   </button>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-outline" (click)="openEditPrice(p)">
-                    Edit Price
-                  </button>
+                  <div class="btn-group-cell">
+                    <button class="btn btn-sm btn-primary" (click)="openEditProductFull(p)" title="Edit complete product details">
+                      ✏️ Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline" (click)="openEditPrice(p)" title="Quickly update price">
+                      ₹ Price
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteProductItem(p)" title="Delete product">
+                      🗑️
+                    </button>
+                  </div>
                 </td>
               </tr>
             }
@@ -254,12 +267,26 @@
       <div class="panel-header">
         <div>
           <h2 class="panel-title">Shop Owner Wholesale Partners Directory</h2>
-          <p class="panel-desc">Manage the 10 static shop credentials and registered retail partners. Share credentials or toggle activation status.</p>
+          <p class="panel-desc">Review pending registrations, approve partner credentials & wholesale tiers, or manage active partners.</p>
         </div>
 
-        <a routerLink="/register-shop" class="btn btn-purple btn-sm">
-          + Enroll New Shop Owner
-        </a>
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <div class="pricing-cat-pills" style="margin-bottom: 0;">
+            <button class="cat-pill-btn" [class.active]="ownerFilter === 'all'" (click)="ownerFilter = 'all'">
+              All ({{ dataService.shopOwners().length }})
+            </button>
+            <button class="cat-pill-btn" [class.active]="ownerFilter === 'pending'" (click)="ownerFilter = 'pending'">
+              ⏳ Pending ({{ dataService.pendingShopOwners().length }})
+            </button>
+            <button class="cat-pill-btn" [class.active]="ownerFilter === 'active'" (click)="ownerFilter = 'active'">
+              ✓ Active ({{ dataService.activeShopOwners().length }})
+            </button>
+          </div>
+
+          <a routerLink="/register-shop" class="btn btn-purple btn-sm">
+            + Enroll New Shop Owner
+          </a>
+        </div>
       </div>
 
       <div class="table-responsive">
@@ -276,8 +303,8 @@
             </tr>
           </thead>
           <tbody>
-            @for (owner of dataService.shopOwners(); track owner.id) {
-              <tr>
+            @for (owner of filteredShopOwners; track owner.id) {
+              <tr [class.highlight-row]="owner.status === 'pending'">
                 <td style="width: 75px;">
                   <img [src]="owner.shopPhoto" [alt]="owner.shopName" class="tbl-thumb-shop" />
                 </td>
@@ -287,12 +314,16 @@
                 </td>
                 <td>
                   <div>{{ owner.ownerName }}</div>
-                  <div class="tbl-sub">{{ owner.phone }}</div>
+                  <div class="tbl-sub">📞 {{ owner.phone }}</div>
                 </td>
                 <td>
                   <div class="cred-preview">
                     <code>{{ owner.email }}</code>
-                    <div class="pwd-preview">Pass: <strong>{{ owner.defaultPasswordPlain || 'Owner@HiTech123' }}</strong></div>
+                    @if (owner.status === 'pending') {
+                      <div class="tbl-sub" style="color: #f59e0b;">Password set upon approval</div>
+                    } @else {
+                      <div class="pwd-preview">Pass: <strong>{{ owner.defaultPasswordPlain || 'Owner@HiTech123' }}</strong></div>
+                    }
                   </div>
                 </td>
                 <td>
@@ -301,24 +332,34 @@
                   } @else {
                     <span class="tbl-sub">Unregistered</span>
                   }
-                  <span class="badge badge-purple" style="margin-top: 4px;">{{ owner.bulkDiscountTier || '15% Wholesale' }}</span>
+                  <span class="badge badge-purple" style="margin-top: 4px;">{{ owner.bulkDiscountTier || '10% Wholesale' }}</span>
                 </td>
                 <td>
-                  <button
-                    class="status-toggle-badge"
-                    [class.is-active]="owner.status === 'active'"
-                    (click)="toggleOwnerStatus(owner)">
-                    {{ owner.status === 'active' ? '✓ Active Partner' : '✕ Suspended' }}
-                  </button>
+                  @if (owner.status === 'pending') {
+                    <span class="badge badge-warning">⏳ Pending Approval</span>
+                  } @else {
+                    <button
+                      class="status-toggle-badge"
+                      [class.is-active]="owner.status === 'active'"
+                      (click)="toggleOwnerStatus(owner)">
+                      {{ owner.status === 'active' ? '✓ Active Partner' : '✕ Suspended' }}
+                    </button>
+                  }
                 </td>
                 <td>
                   <div class="btn-group-cell">
-                    <button class="btn btn-sm btn-outline" (click)="copyCredentials(owner)" title="Copy credentials to clipboard">
-                      📋 Share
-                    </button>
-                    <button class="btn btn-sm btn-secondary" (click)="openEditOwner(owner)">
-                      ✏️ Edit
-                    </button>
+                    @if (owner.status === 'pending') {
+                      <button class="btn btn-sm btn-success" (click)="openApproveOwner(owner)" title="Review details and approve partner">
+                        ✓ Review & Approve
+                      </button>
+                    } @else {
+                      <button class="btn btn-sm btn-outline" (click)="copyCredentials(owner)" title="Copy credentials to clipboard">
+                        📋 Share
+                      </button>
+                      <button class="btn btn-sm btn-secondary" (click)="openEditOwner(owner)">
+                        ✏️ Edit
+                      </button>
+                    }
                   </div>
                 </td>
               </tr>
@@ -335,111 +376,231 @@
       <div class="panel-header">
         <div>
           <h2 class="panel-title">Customer Orders & Service Appointments</h2>
-          <p class="panel-desc">All purchases and doorstep repair appointments submitted by customers and shop owners.</p>
+          <p class="panel-desc">All retail purchases, wholesale restocks, and doorstep/parcel repair appointments.</p>
+        </div>
+
+        <div class="pricing-cat-pills" style="margin-bottom: 0;">
+          <button class="cat-pill-btn" [class.active]="ordersSubTab === 'orders'" (click)="ordersSubTab = 'orders'">
+            🛒 Customer Orders ({{ orderService.orders().length }})
+          </button>
+          <button class="cat-pill-btn" [class.active]="ordersSubTab === 'services'" (click)="ordersSubTab = 'services'">
+            🔧 Repair Bookings ({{ orderService.bookings().length }})
+          </button>
         </div>
       </div>
 
-      <h3 class="sub-heading">Product Purchase Orders ({{ orderService.orders().length }})</h3>
-      @if (orderService.orders().length > 0) {
-        <div class="table-responsive" style="margin-bottom: 3rem;">
-          <table class="custom-table">
-            <thead>
-              <tr>
-                <th>Order #</th>
-                <th>Customer & Phone</th>
-                <th>Delivery Address</th>
-                <th>Items Ordered</th>
-                <th>Total</th>
-                <th>Type</th>
-                <th>Fulfillment Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (ord of orderService.orders(); track ord.id) {
+      <!-- SUB-TAB 1: PRODUCT ORDERS -->
+      @if (ordersSubTab === 'orders') {
+        <h3 class="sub-heading">Product Purchase Orders ({{ orderService.orders().length }})</h3>
+        @if (orderService.orders().length > 0) {
+          <div class="table-responsive" style="margin-bottom: 3rem;">
+            <table class="custom-table">
+              <thead>
                 <tr>
-                  <td><strong>{{ ord.orderNumber }}</strong><div class="tbl-sub">{{ ord.createdAt }}</div></td>
-                  <td>
-                    <strong>{{ ord.customer.name }}</strong>
-                    <div class="tbl-sub">📞 {{ ord.customer.phone }}</div>
-                  </td>
-                  <td>{{ ord.customer.address }}</td>
-                  <td>
-                    @for (it of ord.items; track it.productId) {
-                      <div class="ordered-it">{{ it.name }} (x{{ it.quantity }})</div>
-                    }
-                  </td>
-                  <td><strong class="text-gradient">₹{{ ord.totalAmount | number }}</strong></td>
-                  <td>
-                    <span class="badge" [ngClass]="ord.placedByRole === 'shopowner' ? 'badge-purple' : 'badge-cyan'">
-                      {{ ord.placedByRole === 'shopowner' ? 'Wholesale Partner' : 'Customer' }}
-                    </span>
-                  </td>
-                  <td>
-                    <select [value]="ord.status" (change)="updateOrderStatus(ord, $event)" class="status-select">
-                      <option value="Order Placed">Order Placed</option>
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Dispatched">Dispatched</option>
-                      <option value="Delivered">Delivered</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
-                  </td>
+                  <th>Order #</th>
+                  <th>Customer & Phone</th>
+                  <th>Delivery Address</th>
+                  <th>Items Ordered</th>
+                  <th>Total</th>
+                  <th>Order Type</th>
+                  <th>Fulfillment Status</th>
                 </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      } @else {
-        <p class="no-data-msg">No customer purchase orders placed yet.</p>
+              </thead>
+              <tbody>
+                @for (ord of orderService.orders(); track ord.id) {
+                  <tr>
+                    <td><strong>{{ ord.orderNumber }}</strong><div class="tbl-sub">{{ ord.createdAt }}</div></td>
+                    <td>
+                      <strong>{{ ord.customer.name }}</strong>
+                      <div class="tbl-sub">📞 {{ ord.customer.phone }}</div>
+                    </td>
+                    <td>{{ ord.customer.address }}</td>
+                    <td>
+                      @for (it of ord.items; track it.productId) {
+                        <div class="ordered-it">{{ it.name }} (x{{ it.quantity }})</div>
+                      }
+                    </td>
+                    <td><strong class="text-gradient">₹{{ ord.totalAmount | number }}</strong></td>
+                    <td>
+                      @if (ord.placedByRole === 'shopowner') {
+                        <span class="badge badge-purple" title="Shop Owner ID: {{ ord.shopOwnerId }}">Wholesale Partner</span>
+                        <div class="tbl-sub">B2B Restock</div>
+                      } @else {
+                        <span class="badge badge-cyan">Retail Customer</span>
+                      }
+                    </td>
+                    <td>
+                      <select [value]="ord.status" (change)="updateOrderStatus(ord, $event)" class="status-select">
+                        <option value="Order Placed">Order Placed</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Dispatched">Dispatched</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <p class="no-data-msg">No customer purchase orders placed yet.</p>
+        }
       }
 
-      <h3 class="sub-heading">Repair Service Appointments ({{ orderService.bookings().length }})</h3>
-      @if (orderService.bookings().length > 0) {
-        <div class="table-responsive">
-          <table class="custom-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Service Name</th>
-                <th>Device Model</th>
-                <th>Customer Details</th>
-                <th>Date & Slot</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (b of orderService.bookings(); track b.id) {
+      <!-- SUB-TAB 2: REPAIR APPOINTMENTS -->
+      @if (ordersSubTab === 'services') {
+        <h3 class="sub-heading">Repair Service Appointments ({{ orderService.bookings().length }})</h3>
+        @if (orderService.bookings().length > 0) {
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
                 <tr>
-                  <td><strong>#{{ b.id }}</strong></td>
-                  <td>{{ b.serviceName }}</td>
-                  <td><span class="badge badge-purple">{{ b.deviceModel }}</span></td>
-                  <td>
-                    <strong>{{ b.customerName }}</strong>
-                    <div class="tbl-sub">📞 {{ b.customerPhone }}</div>
-                    <div class="tbl-sub">📍 {{ b.customerAddress }}</div>
-                  </td>
-                  <td>{{ b.preferredDate }} ({{ b.preferredTimeSlot }})</td>
-                  <td><span class="badge badge-success">{{ b.status }}</span></td>
+                  <th>ID</th>
+                  <th>Service & Device</th>
+                  <th>Customer & Contact</th>
+                  <th>Fulfillment Mode & Distance</th>
+                  <th>Date & Slot</th>
+                  <th>Status</th>
                 </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      } @else {
-        <p class="no-data-msg">No repair service appointments requested yet.</p>
+              </thead>
+              <tbody>
+                @for (b of orderService.bookings(); track b.id) {
+                  <tr>
+                    <td><strong>#{{ b.id }}</strong></td>
+                    <td>
+                      <strong>{{ b.serviceName }}</strong>
+                      <div><span class="badge badge-purple">{{ b.deviceModel }}</span></div>
+                      @if (b.issueDescription) {
+                        <div class="tbl-sub" style="max-width: 200px;">{{ b.issueDescription }}</div>
+                      }
+                    </td>
+                    <td>
+                      <strong>{{ b.customerName }}</strong>
+                      <div class="tbl-sub">📞 {{ b.customerPhone }}</div>
+                      <div class="tbl-sub">📍 {{ b.customerAddress }}</div>
+                    </td>
+                    <td>
+                      @if (b.fulfillmentMode === 'home_pickup') {
+                        <span class="badge badge-success">🚗 Doorstep Pickup</span>
+                        <div class="tbl-sub">Distance: <strong>{{ b.distanceKm != null ? b.distanceKm + ' km' : 'Verified' }}</strong></div>
+                      } @else if (b.fulfillmentMode === 'parcel') {
+                        <span class="badge badge-purple">📦 Courier / Parcel</span>
+                        <div class="tbl-sub">Send to Hub</div>
+                      } @else {
+                        <span class="badge badge-cyan">🏬 Service Hub Handover</span>
+                        <div class="tbl-sub">Direct Handover</div>
+                      }
+                      <div class="tbl-sub">Pincode: {{ b.pincode || 'N/A' }}</div>
+                    </td>
+                    <td>
+                      <div>{{ b.preferredDate }}</div>
+                      <div class="tbl-sub">{{ b.preferredTimeSlot }}</div>
+                    </td>
+                    <td>
+                      <select [value]="b.status" (change)="updateBookingStatus(b, $event)" class="status-select">
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <p class="no-data-msg">No repair service appointments requested yet.</p>
+        }
       }
     </div>
   }
 
-  <!-- TAB 5: DATA SYNC & EMAIL SETTINGS -->
+  <!-- TAB 5: DATA SYNC, GITHUB PUBLISH & EMAIL SETTINGS -->
   @if (activeTab === 'settings') {
     <div class="tab-panel glass-panel animate-fade-in">
       <div class="panel-header">
         <div>
           <h2 class="panel-title">Static Data Synchronization & Git Publishing</h2>
           <p class="panel-desc">
-            Since HiTech is a pure static web application, changes made in this admin panel are saved to your browser's localStorage. To make your changes permanent for all website visitors, export the updated JSON files and commit them to your repository!
+            Since HiTech is a pure static web application, modifications in this console are kept in your browser's localStorage overlay. To make updates permanent for all visitors, publish directly to your GitHub repository or export the updated JSON files!
           </p>
         </div>
+      </div>
+
+      <!-- 1. GITHUB AUTOMATED CATALOG PUBLISHER -->
+      <div class="settings-card glass-card" style="margin-bottom: 2rem;">
+        <div class="card-header-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem;">Automated GitHub Catalog Sync (Deploy to Render)</h3>
+            <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+              One-click publish puts updated JSON files directly into your GitHub repository via GitHub REST API. GitHub Actions will then automatically deploy changes live to Render.
+            </p>
+          </div>
+        </div>
+
+        <form (ngSubmit)="saveGithubConfig()" style="margin-top: 1.25rem;">
+          <div class="form-row">
+            <div class="form-group">
+              <label>GitHub Repository Owner</label>
+              <input type="text" [(ngModel)]="githubConfig.owner" name="ghOwner" class="form-control" placeholder="e.g. BhuvaneshwaranMitrahsoft" />
+            </div>
+
+            <div class="form-group">
+              <label>Repository Name</label>
+              <input type="text" [(ngModel)]="githubConfig.repo" name="ghRepo" class="form-control" placeholder="e.g. HiTech" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Deployment Branch</label>
+              <input type="text" [(ngModel)]="githubConfig.branch" name="ghBranch" class="form-control" placeholder="main" />
+            </div>
+
+            <div class="form-group">
+              <label>Personal Access Token (PAT) <span class="tbl-sub" style="display:inline;">(stored only in your browser)</span></label>
+              <input type="password" [(ngModel)]="githubConfig.token" name="ghToken" class="form-control" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+            </div>
+          </div>
+
+          <div class="action-buttons-wrap" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 1rem;">
+            <button type="submit" class="btn btn-secondary">
+              Save GitHub Settings
+            </button>
+
+            <button type="button" class="btn btn-primary" (click)="publishCatalogToGithub()" [disabled]="isPublishingGithub">
+              @if (isPublishingGithub) {
+                🚀 Publishing to GitHub...
+              } @else {
+                🚀 Publish Catalog to GitHub (Auto-Deploy)
+              }
+            </button>
+          </div>
+
+          @if (!githubConfig.token) {
+            <p class="tbl-sub" style="margin-top: 0.75rem; color: #f59e0b;">
+              💡 <strong>GitHub token not set:</strong> You can still save products locally and use <strong>Email Catalog Backup</strong> or <strong>Download JSON</strong> below to update your repo manually.
+            </p>
+          }
+        </form>
+      </div>
+
+      <!-- 2. CATALOG BACKUP & MANUAL DOWNLOADS -->
+      <h3 class="sub-heading">Catalog Downloads & Email Backup</h3>
+      <p class="panel-desc">Download updated static JSON files or email a snapshot directly to the administrator.</p>
+
+      <div style="margin-bottom: 1.5rem;">
+        <button class="btn btn-purple btn-sm" (click)="emailCatalogBackup()" [disabled]="isSendingCatalogBackup">
+          @if (isSendingCatalogBackup) {
+            📧 Sending Catalog Backup...
+          } @else {
+            📧 Email Catalog Backup JSON to Admin
+          }
+        </button>
       </div>
 
       <div class="export-grid">
@@ -469,7 +630,7 @@
 
         <div class="export-card glass-card">
           <h4>Shop Owners Database</h4>
-          <p>Contains the 10 static + registered shop owner partner profiles.</p>
+          <p>Contains all active, pending, and static shop partner profiles.</p>
           <button class="btn btn-outline btn-sm" (click)="exportData('shop-owners')">
             ⬇️ Download shop-owners.json
           </button>
@@ -478,9 +639,89 @@
 
       <div class="settings-divider"></div>
 
-      <!-- EmailJS Live Configuration Panel -->
-      <h3 class="sub-heading">EmailJS API Keys Configuration (OTP & Order Dispatch)</h3>
-      <p class="panel-desc">Configure your actual EmailJS keys to send real emails to customer and owner.</p>
+      <!-- 3. ORDERS LEDGER & YEARLY ARCHIVE -->
+      <h3 class="sub-heading">Orders Ledger & Yearly Storage Archiving</h3>
+      <p class="panel-desc">Export current orders or archive previous year records to free up browser storage.</p>
+
+      <div class="export-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 2rem;">
+        <div class="export-card glass-card">
+          <h4>Export Customer Orders</h4>
+          <p>{{ orderService.orders().length }} active purchase orders recorded.</p>
+          <button class="btn btn-outline btn-sm" (click)="exportOrders()">
+            ⬇️ Download orders.json
+          </button>
+        </div>
+
+        <div class="export-card glass-card">
+          <h4>Export Service Bookings</h4>
+          <p>{{ orderService.bookings().length }} repair appointments recorded.</p>
+          <button class="btn btn-outline btn-sm" (click)="exportBookings()">
+            ⬇️ Download bookings.json
+          </button>
+        </div>
+
+        <div class="export-card glass-card" style="border-color: rgba(245, 158, 11, 0.3);">
+          <h4>Yearly Archive & Clean</h4>
+          <p>
+            Last archive year: <strong>{{ lastBackupYear || 'None' }}</strong>.<br />
+            Downloads archive JSON, emails backup, and resets order list.
+          </p>
+          <button class="btn btn-secondary btn-sm" (click)="runYearlyArchive()" [disabled]="isArchivingOrders">
+            @if (isArchivingOrders) {
+              Archiving...
+            } @else {
+              📦 Backup Now & Archive Year
+            }
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <!-- 4. SERVICE HUB & PICKUP RADIUS CONFIGURATION -->
+      <h3 class="sub-heading">Service Hub & 30 km Pickup Settings</h3>
+      <p class="panel-desc">Configure your physical service center location and maximum home pickup radius.</p>
+
+      <form (ngSubmit)="saveHubSettings()" style="max-width: 700px; margin-bottom: 2.5rem;">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Service Hub Name</label>
+            <input type="text" [(ngModel)]="hubSettings.name" name="hubName" class="form-control" placeholder="HiTech Service Center" />
+          </div>
+
+          <div class="form-group">
+            <label>Home Pickup Radius (Kilometers)</label>
+            <input type="number" [(ngModel)]="hubSettings.pickupRadiusKm" name="hubRadius" class="form-control" placeholder="30" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Hub Physical Address</label>
+          <input type="text" [(ngModel)]="hubSettings.address" name="hubAddress" class="form-control" placeholder="Anna Salai, Chennai, Tamil Nadu" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Hub Latitude</label>
+            <input type="number" step="0.0001" [(ngModel)]="hubSettings.lat" name="hubLat" class="form-control" placeholder="13.0827" />
+          </div>
+
+          <div class="form-group">
+            <label>Hub Longitude</label>
+            <input type="number" step="0.0001" [(ngModel)]="hubSettings.lng" name="hubLng" class="form-control" placeholder="80.2707" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-secondary">
+          Save Service Hub Settings
+        </button>
+      </form>
+
+      <div class="settings-divider"></div>
+
+      <!-- 5. EMAILJS CONFIGURATION -->
+      <h3 class="sub-heading">EmailJS API Keys Configuration (OTP, Orders & Backups)</h3>
+      <p class="panel-desc">Configure your actual EmailJS keys to send real emails to customers, shop owners, and administrators.</p>
 
       <form (ngSubmit)="saveEmailSettings()" class="email-settings-form">
         <div class="form-row">
@@ -502,13 +743,13 @@
           </div>
 
           <div class="form-group">
-            <label>Order Notification Template ID</label>
+            <label>Order & Dispatch Template ID</label>
             <input type="text" [(ngModel)]="emailSettings.orderTemplateId" name="orderTemplateId" class="form-control" placeholder="e.g. template_order" />
           </div>
         </div>
 
         <div class="form-group">
-          <label>Owner Notification Recipient Email</label>
+          <label>Admin Notification Recipient Email</label>
           <input type="email" [(ngModel)]="emailSettings.notificationEmail" name="notificationEmail" class="form-control" placeholder="bhuvaneshwaranaj@gmail.com" />
         </div>
 
@@ -517,6 +758,194 @@
           <button type="button" class="btn btn-danger" (click)="resetAllData()">Factory Reset All Catalogs</button>
         </div>
       </form>
+    </div>
+  }
+
+  <!-- MODAL: ADD / EDIT COMPLETE PRODUCT -->
+  @if (showProductModal) {
+    <div class="modal-backdrop animate-fade-in" (click)="closeProductModal()">
+      <div class="modal-card modal-lg glass-panel" (click)="$event.stopPropagation()">
+        <div class="modal-header-custom">
+          <div>
+            <span class="badge" [ngClass]="productForm.category === 'phone' ? 'badge-cyan' : 'badge-purple'">
+              {{ productForm.category === 'phone' ? 'Smartphone' : 'Accessory' }}
+            </span>
+            <h3 style="margin-top: 0.35rem;">{{ isEditingProduct ? 'Edit Product Details' : 'Add New Catalog Product' }}</h3>
+          </div>
+          <button class="modal-close-btn" (click)="closeProductModal()">✕</button>
+        </div>
+
+        <form (ngSubmit)="saveProductForm()" class="product-modal-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Product Name <span class="required">*</span></label>
+              <input type="text" [(ngModel)]="productForm.name" name="prodName" class="form-control" placeholder="e.g. iPhone 15 Pro Max" required />
+            </div>
+
+            <div class="form-group">
+              <label>Brand <span class="required">*</span></label>
+              <input type="text" [(ngModel)]="productForm.brand" name="prodBrand" class="form-control" placeholder="e.g. Apple, Samsung, OnePlus" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Category <span class="required">*</span></label>
+              <select [(ngModel)]="productForm.category" name="prodCategory" (change)="onCategoryChange()" class="form-control">
+                <option value="phone">Mobile Phone</option>
+                <option value="accessory">Accessory</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Subcategory</label>
+              <select [(ngModel)]="productForm.subCategory" name="prodSubCategory" class="form-control">
+                @if (productForm.category === 'phone') {
+                  @for (sub of phoneSubCategories; track sub) {
+                    <option [value]="sub">{{ sub }}</option>
+                  }
+                } @else {
+                  @for (sub of accessorySubCategories; track sub) {
+                    <option [value]="sub">{{ sub }}</option>
+                  }
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Selling Price (₹ INR) <span class="required">*</span></label>
+              <input type="number" [(ngModel)]="productForm.price" name="prodPrice" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label>Original MRP (₹ INR)</label>
+              <input type="number" [(ngModel)]="productForm.originalPrice" name="prodOriginalPrice" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Image URL <span class="required">*</span></label>
+            <input type="text" [(ngModel)]="productForm.image" name="prodImage" class="form-control" placeholder="https://images.unsplash.com/..." required />
+          </div>
+
+          <div class="form-group">
+            <label>Product Description</label>
+            <textarea [(ngModel)]="productForm.description" name="prodDesc" class="form-control" rows="2" placeholder="Key highlights, warranty, features..."></textarea>
+          </div>
+
+          <!-- Phone-specific specs -->
+          @if (productForm.category === 'phone') {
+            <div class="specs-section">
+              <span class="sub-heading" style="font-size: 0.95rem; margin-bottom: 0.5rem; display: block;">Hardware Specifications</span>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>RAM</label>
+                  <input type="text" [(ngModel)]="productForm.ram" name="prodRam" class="form-control" placeholder="e.g. 8 GB / 12 GB" />
+                </div>
+                <div class="form-group">
+                  <label>Internal Storage</label>
+                  <input type="text" [(ngModel)]="productForm.storage" name="prodStorage" class="form-control" placeholder="e.g. 128 GB / 256 GB" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Display</label>
+                  <input type="text" [(ngModel)]="productForm.display" name="prodDisplay" class="form-control" placeholder="e.g. 6.7-inch OLED 120Hz" />
+                </div>
+                <div class="form-group">
+                  <label>Battery</label>
+                  <input type="text" [(ngModel)]="productForm.battery" name="prodBattery" class="form-control" placeholder="e.g. 5000 mAh Fast Charge" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Camera Setup</label>
+                <input type="text" [(ngModel)]="productForm.camera" name="prodCamera" class="form-control" placeholder="e.g. 48MP + 12MP + 12MP" />
+              </div>
+            </div>
+          } @else {
+            <div class="form-group">
+              <label>Compatible With</label>
+              <input type="text" [(ngModel)]="productForm.compatibleWith" name="prodCompat" class="form-control" placeholder="e.g. Universal, iPhone 14/15, Type-C Devices" />
+            </div>
+          }
+
+          <div class="form-row checkboxes-row" style="margin-top: 1rem;">
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="productForm.inStock" name="prodInStock" />
+              <span>In Stock (Visible to public customers)</span>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="productForm.isFeatured" name="prodFeatured" />
+              <span>Featured on Homepage</span>
+            </label>
+          </div>
+
+          <div class="modal-btn-row">
+            <button type="button" class="btn btn-secondary" (click)="closeProductModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+              {{ isEditingProduct ? 'Update Product' : 'Save Product to Catalog' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: APPROVE PENDING SHOP OWNER -->
+  @if (approvingOwner) {
+    <div class="modal-backdrop animate-fade-in" (click)="closeApproveOwnerModal()">
+      <div class="modal-card modal-lg glass-panel" (click)="$event.stopPropagation()">
+        <div class="modal-header-custom">
+          <div>
+            <span class="badge badge-warning">Partner Verification</span>
+            <h3 style="margin-top: 0.35rem;">Approve: {{ approvingOwner.shopName }}</h3>
+          </div>
+          <button class="modal-close-btn" (click)="closeApproveOwnerModal()">✕</button>
+        </div>
+
+        <div class="partner-summary-box" style="display: flex; gap: 1rem; align-items: center; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); margin: 1rem 0;">
+          <img [src]="approvingOwner.shopPhoto" [alt]="approvingOwner.shopName" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm);" />
+          <div>
+            <div style="font-weight: 700; color: var(--text-white);">{{ approvingOwner.shopName }}</div>
+            <div class="tbl-sub">Proprietor: {{ approvingOwner.ownerName }} • 📞 {{ approvingOwner.phone }}</div>
+            <div class="tbl-sub">📍 {{ approvingOwner.location }}</div>
+            @if (approvingOwner.gstNumber) {
+              <div class="tbl-sub">GST: <strong>{{ approvingOwner.gstNumber }}</strong></div>
+            }
+          </div>
+        </div>
+
+        <form (ngSubmit)="confirmApproveOwner()">
+          <div class="form-group">
+            <label>Login Email Address <span class="required">*</span></label>
+            <input type="email" [(ngModel)]="approveEmail" name="appEmail" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label>Initial Access Password <span class="required">*</span></label>
+            <input type="text" [(ngModel)]="approvePassword" name="appPassword" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label>Assigned Wholesale Discount Tier <span class="required">*</span></label>
+            <select [(ngModel)]="approveTier" name="appTier" class="form-control">
+              @for (tier of discountTiers; track tier) {
+                <option [value]="tier">{{ tier }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="modal-btn-row">
+            <button type="button" class="btn btn-secondary" (click)="closeApproveOwnerModal()">Cancel</button>
+            <button type="submit" class="btn btn-success">
+              ✓ Activate & Grant Wholesale Access
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   }
 
@@ -583,6 +1012,7 @@
             <option value="Silver (10% OFF)">Silver (10% OFF)</option>
             <option value="Gold (15% OFF)">Gold (15% OFF)</option>
             <option value="Platinum (20% OFF)">Platinum (20% OFF)</option>
+            <option value="Diamond VIP (25% OFF)">Diamond VIP (25% OFF)</option>
           </select>
         </div>
 

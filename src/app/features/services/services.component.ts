@@ -5,8 +5,9 @@ import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../core/services/data.service';
 import { OrderService } from '../../core/services/order.service';
 import { ToastService } from '../../core/services/toast.service';
+import { DistanceService, DistanceResult } from '../../core/services/distance.service';
 import { ServiceCardComponent } from '../../shared/components/service-card/service-card.component';
-import { ServiceBookingItem, ServiceBookingRequest } from '../../core/models/service.model';
+import { ServiceBookingItem, ServiceBookingRequest, ServiceFulfillmentMode } from '../../core/models/service.model';
 
 @Component({
   selector: 'app-services',
@@ -19,6 +20,7 @@ export class ServicesComponent implements OnInit {
   dataService = inject(DataService);
   orderService = inject(OrderService);
   toastService = inject(ToastService);
+  distanceService = inject(DistanceService);
   private route = inject(ActivatedRoute);
 
   selectedCategory: string = 'all';
@@ -27,6 +29,13 @@ export class ServicesComponent implements OnInit {
   bookingSubmitted: boolean = false;
   confirmedBooking: ServiceBookingRequest | null = null;
   isSubmitting: boolean = false;
+  isLocating: boolean = false;
+
+  distanceResult: DistanceResult = {
+    distanceKm: null,
+    pickupEligible: false,
+    source: 'unknown'
+  };
 
   bookingForm = {
     deviceModel: '',
@@ -34,6 +43,8 @@ export class ServicesComponent implements OnInit {
     customerName: '',
     customerPhone: '',
     customerAddress: '',
+    pincode: '',
+    fulfillmentMode: 'home_pickup' as ServiceFulfillmentMode,
     preferredDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
     preferredTimeSlot: '10:00 AM - 01:00 PM'
   };
@@ -44,6 +55,10 @@ export class ServicesComponent implements OnInit {
     '04:00 PM - 07:00 PM',
     '07:00 PM - 09:00 PM'
   ];
+
+  get hubConfig() {
+    return this.distanceService.getHubConfig();
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -67,12 +82,70 @@ export class ServicesComponent implements OnInit {
     this.selectedService = service;
     this.bookingSubmitted = false;
     this.confirmedBooking = null;
+    this.distanceResult = { distanceKm: null, pickupEligible: false, source: 'unknown' };
     this.activeBookingModal = true;
   }
 
   closeBookingModal(): void {
     this.activeBookingModal = false;
     this.selectedService = null;
+  }
+
+  onPincodeChange(): void {
+    const pin = (this.bookingForm.pincode || '').trim();
+    if (pin.length === 6) {
+      this.distanceResult = this.distanceService.measureFromPincode(pin);
+      if (this.distanceResult.distanceKm != null) {
+        if (this.distanceResult.pickupEligible) {
+          this.bookingForm.fulfillmentMode = 'home_pickup';
+          this.toastService.show(
+            `Location verified (${this.distanceResult.distanceKm} km from hub). Home pickup is available!`,
+            'success'
+          );
+        } else {
+          this.bookingForm.fulfillmentMode = 'parcel';
+          this.toastService.show(
+            `Location is ${this.distanceResult.distanceKm} km from service center (> ${this.hubConfig.pickupRadiusKm} km). Please use Courier/Parcel or Store Handover.`,
+            'info'
+          );
+        }
+      } else {
+        // Unknown pin coordinates
+        this.toastService.show(
+          'Pincode entered. If outside Chennai/hub zone (> 30 km), please choose Parcel delivery or Store Handover.',
+          'info'
+        );
+      }
+    }
+  }
+
+  async useCurrentLocation(): Promise<void> {
+    this.isLocating = true;
+    try {
+      const res = await this.distanceService.requestBrowserLocation();
+      this.distanceResult = res;
+      if (res.distanceKm != null) {
+        if (res.pickupEligible) {
+          this.bookingForm.fulfillmentMode = 'home_pickup';
+          this.toastService.show(
+            `GPS location detected: ${res.distanceKm} km from hub. Doorstep pickup available!`,
+            'success'
+          );
+        } else {
+          this.bookingForm.fulfillmentMode = 'parcel';
+          this.toastService.show(
+            `GPS location is ${res.distanceKm} km away. Outside 30 km pickup radius. Selected Courier / Parcel delivery.`,
+            'warning'
+          );
+        }
+      } else {
+        this.toastService.show('Unable to retrieve GPS coordinates. Please enter your 6-digit pincode.', 'warning');
+      }
+    } catch {
+      this.toastService.show('Location access denied or unavailable. Please enter your pincode.', 'warning');
+    } finally {
+      this.isLocating = false;
+    }
   }
 
   async submitBooking(): Promise<void> {
@@ -83,9 +156,30 @@ export class ServicesComponent implements OnInit {
       return;
     }
 
+    if (this.bookingForm.customerPhone.trim().length < 10) {
+      this.toastService.show('Please enter a valid 10-digit mobile number.', 'warning');
+      return;
+    }
+
+    if (!this.bookingForm.pincode.trim() || this.bookingForm.pincode.trim().length !== 6) {
+      this.toastService.show('Please enter a valid 6-digit Pincode to check service delivery eligibility.', 'warning');
+      return;
+    }
+
     if (!this.bookingForm.deviceModel.trim()) {
       this.toastService.show('Please specify your mobile phone model.', 'warning');
       return;
+    }
+
+    // Check 30 km restriction if Home Pickup is selected
+    if (this.bookingForm.fulfillmentMode === 'home_pickup') {
+      if (this.distanceResult.distanceKm != null && !this.distanceResult.pickupEligible) {
+        this.toastService.show(
+          `Your address is ${this.distanceResult.distanceKm} km away, which exceeds the ${this.hubConfig.pickupRadiusKm} km limit for home pickup. Please select Courier/Parcel or Store Handover.`,
+          'danger'
+        );
+        return;
+      }
     }
 
     this.isSubmitting = true;
@@ -98,6 +192,10 @@ export class ServicesComponent implements OnInit {
         customerName: this.bookingForm.customerName,
         customerPhone: this.bookingForm.customerPhone,
         customerAddress: this.bookingForm.customerAddress,
+        pincode: this.bookingForm.pincode.trim(),
+        distanceKm: this.distanceResult.distanceKm ?? undefined,
+        pickupEligible: this.distanceResult.pickupEligible,
+        fulfillmentMode: this.bookingForm.fulfillmentMode,
         preferredDate: this.bookingForm.preferredDate,
         preferredTimeSlot: this.bookingForm.preferredTimeSlot,
         estimatedPrice: this.selectedService.startingPrice

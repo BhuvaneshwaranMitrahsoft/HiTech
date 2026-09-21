@@ -34,8 +34,8 @@ export class OwnerDashboardComponent {
 
   get myOrders() {
     const s = this.session;
-    if (!s) return [];
-    return this.orderService.orders().filter(o => o.shopOwnerId === s.shopOwnerId || o.placedByRole === 'shopowner');
+    if (!s || !s.shopOwnerId) return [];
+    return this.orderService.orders().filter(o => o.shopOwnerId === s.shopOwnerId);
   }
 
   quickAddBulk(product: ProductItem, qty: number = 5): void {
@@ -43,8 +43,9 @@ export class OwnerDashboardComponent {
       this.toastService.show('Item is out of stock', 'warning');
       return;
     }
-    this.cartService.setBulkMode(true, 15);
+    const discount = this.session?.bulkDiscountPercent || 10;
+    this.cartService.setBulkMode(true, discount);
     this.cartService.addToCart(product, qty);
-    this.toastService.show(`Added ${qty}x ${product.name} to bulk cart with 15% Wholesale discount`, 'success', 'Wholesale Bulk Added');
+    this.toastService.show(`Added ${qty}x ${product.name} to bulk cart with ${discount}% Wholesale discount`, 'success', 'Wholesale Bulk Added');
   }
 }

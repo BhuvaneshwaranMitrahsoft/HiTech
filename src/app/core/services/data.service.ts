@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ProductItem } from '../models/product.model';
 import { ServiceBookingItem } from '../models/service.model';
 import { ShopOwner, ShopRegistrationForm } from '../models/shop-owner.model';
+import { parseDiscountPercent } from '../utils/wholesale.util';
 
 const STORAGE_KEYS = {
   PRODUCTS: 'hitech_custom_products',
@@ -33,8 +34,12 @@ export class DataService {
 
   // Computed signals
   readonly allProducts = computed(() => [...this._products(), ...this._accessories()]);
-  readonly featuredProducts = computed(() => this.allProducts().filter(p => p.isFeatured));
+  readonly publicProducts = computed(() => this._products().filter(p => p.inStock));
+  readonly publicAccessories = computed(() => this._accessories().filter(p => p.inStock));
+  readonly publicAllProducts = computed(() => [...this.publicProducts(), ...this.publicAccessories()]);
+  readonly featuredProducts = computed(() => this.publicAllProducts().filter(p => p.isFeatured));
   readonly activeShopOwners = computed(() => this._shopOwners().filter(o => o.status === 'active'));
+  readonly pendingShopOwners = computed(() => this._shopOwners().filter(o => o.status === 'pending'));
 
   constructor() {
     this.initData();
@@ -98,18 +103,120 @@ export class DataService {
 
   // --- Products & Accessories Modifiers ---
 
+  private persistProducts(list: ProductItem[]): void {
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(list));
+  }
+
+  private persistAccessories(list: ProductItem[]): void {
+    localStorage.setItem(STORAGE_KEYS.ACCESSORIES, JSON.stringify(list));
+  }
+
+  private persistOwners(list: ShopOwner[]): void {
+    localStorage.setItem(STORAGE_KEYS.SHOP_OWNERS, JSON.stringify(list));
+  }
+
+  getDiscountPercent(tier?: string): number {
+    return parseDiscountPercent(tier, 10);
+  }
+
+  addProduct(product: Omit<ProductItem, 'id'> & { id?: string }): ProductItem {
+    const newProduct: ProductItem = {
+      ...product,
+      id: product.id || 'prod-' + Date.now(),
+      rating: product.rating ?? 4.5,
+      reviewsCount: product.reviewsCount ?? 0,
+      inStock: product.inStock ?? true
+    };
+
+    if (newProduct.category === 'accessory') {
+      this._accessories.update(list => {
+        const updated = [newProduct, ...list];
+        this.persistAccessories(updated);
+        return updated;
+      });
+    } else {
+      this._products.update(list => {
+        const updated = [newProduct, ...list];
+        this.persistProducts(updated);
+        return updated;
+      });
+    }
+    return newProduct;
+  }
+
+  updateProduct(product: ProductItem): void {
+    const inPhones = this._products().some(p => p.id === product.id);
+    const inAccessories = this._accessories().some(p => p.id === product.id);
+    const shouldBeAccessory = product.category === 'accessory';
+
+    if (inPhones && shouldBeAccessory) {
+      this._products.update(list => {
+        const updated = list.filter(p => p.id !== product.id);
+        this.persistProducts(updated);
+        return updated;
+      });
+      this._accessories.update(list => {
+        const updated = [product, ...list];
+        this.persistAccessories(updated);
+        return updated;
+      });
+      return;
+    }
+
+    if (inAccessories && !shouldBeAccessory) {
+      this._accessories.update(list => {
+        const updated = list.filter(p => p.id !== product.id);
+        this.persistAccessories(updated);
+        return updated;
+      });
+      this._products.update(list => {
+        const updated = [product, ...list];
+        this.persistProducts(updated);
+        return updated;
+      });
+      return;
+    }
+
+    if (inPhones || (!inAccessories && !shouldBeAccessory)) {
+      this._products.update(list => {
+        const updated = list.map(item => item.id === product.id ? product : item);
+        this.persistProducts(updated);
+        return updated;
+      });
+    } else {
+      this._accessories.update(list => {
+        const updated = list.map(item => item.id === product.id ? product : item);
+        this.persistAccessories(updated);
+        return updated;
+      });
+    }
+  }
+
+  deleteProduct(id: string): void {
+    this._products.update(list => {
+      const updated = list.filter(p => p.id !== id);
+      this.persistProducts(updated);
+      return updated;
+    });
+    this._accessories.update(list => {
+      const updated = list.filter(p => p.id !== id);
+      this.persistAccessories(updated);
+      return updated;
+    });
+  }
+
   toggleProductAvailability(id: string): void {
     const isPhone = this._products().some(p => p.id === id);
     if (isPhone) {
       this._products.update(list => {
         const updated = list.map(item => item.id === id ? { ...item, inStock: !item.inStock } : item);
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updated));
+        this.persistProducts(updated);
         return updated;
       });
     } else {
       this._accessories.update(list => {
         const updated = list.map(item => item.id === id ? { ...item, inStock: !item.inStock } : item);
-        localStorage.setItem(STORAGE_KEYS.ACCESSORIES, JSON.stringify(updated));
+        this.persistAccessories(updated);
         return updated;
       });
     }
@@ -120,13 +227,13 @@ export class DataService {
     if (isPhone) {
       this._products.update(list => {
         const updated = list.map(item => item.id === id ? { ...item, price: newPrice } : item);
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updated));
+        this.persistProducts(updated);
         return updated;
       });
     } else {
       this._accessories.update(list => {
         const updated = list.map(item => item.id === id ? { ...item, price: newPrice } : item);
-        localStorage.setItem(STORAGE_KEYS.ACCESSORIES, JSON.stringify(updated));
+        this.persistAccessories(updated);
         return updated;
       });
     }
@@ -156,12 +263,15 @@ export class DataService {
     this._shopOwners.update(list => {
       const updated = list.map(owner => {
         if (owner.id === id) {
+          if (owner.status === 'pending') {
+            return owner;
+          }
           const newStatus: 'active' | 'suspended' = owner.status === 'active' ? 'suspended' : 'active';
           return { ...owner, status: newStatus };
         }
         return owner;
       });
-      localStorage.setItem(STORAGE_KEYS.SHOP_OWNERS, JSON.stringify(updated));
+      this.persistOwners(updated);
       return updated;
     });
   }
@@ -179,16 +289,36 @@ export class DataService {
         }
         return owner;
       });
-      localStorage.setItem(STORAGE_KEYS.SHOP_OWNERS, JSON.stringify(updated));
+      this.persistOwners(updated);
       return updated;
     });
+  }
+
+  approveShopOwner(id: string, email: string, passwordPlain: string, tier: string): ShopOwner | null {
+    let approved: ShopOwner | null = null;
+    this._shopOwners.update(list => {
+      const updated = list.map(owner => {
+        if (owner.id !== id) return owner;
+        approved = {
+          ...owner,
+          email: email || owner.email,
+          defaultPasswordPlain: passwordPlain || owner.defaultPasswordPlain || 'Owner@HiTech123',
+          bulkDiscountTier: tier || owner.bulkDiscountTier || 'Silver (10% OFF)',
+          status: 'active'
+        };
+        return approved;
+      });
+      this.persistOwners(updated);
+      return updated;
+    });
+    return approved;
   }
 
   registerNewShopOwner(form: ShopRegistrationForm): ShopOwner {
     const newOwner: ShopOwner = {
       id: 'owner-' + Date.now(),
       email: form.email,
-      defaultPasswordPlain: 'Owner@HiTech123',
+      defaultPasswordPlain: '',
       role: 'shopowner',
       shopName: form.shopName,
       ownerName: form.ownerName,
@@ -196,14 +326,14 @@ export class DataService {
       location: form.location,
       shopPhoto: form.shopPhoto || 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=800&q=80',
       gstNumber: form.gstNumber || '',
-      status: 'active', // Auto-approved or set to active for static demo
+      status: 'pending',
       registeredDate: new Date().toISOString().split('T')[0],
-      bulkDiscountTier: 'Standard (10% OFF)'
+      bulkDiscountTier: 'Silver (10% OFF)'
     };
 
     this._shopOwners.update(list => {
       const updated = [newOwner, ...list];
-      localStorage.setItem(STORAGE_KEYS.SHOP_OWNERS, JSON.stringify(updated));
+      this.persistOwners(updated);
       return updated;
     });
 
@@ -226,12 +356,24 @@ export class DataService {
     if (type === 'accessories') data = this._accessories();
     if (type === 'services') data = this._services();
     if (type === 'shop-owners') data = this._shopOwners();
+    this.downloadJsonFile(`${type}.json`, data);
+  }
 
+  getCatalogSnapshot(): { products: ProductItem[]; accessories: ProductItem[]; services: ServiceBookingItem[]; shopOwners: ShopOwner[] } {
+    return {
+      products: this._products(),
+      accessories: this._accessories(),
+      services: this._services(),
+      shopOwners: this._shopOwners()
+    };
+  }
+
+  downloadJsonFile(filename: string, data: unknown): void {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${type}.json`;
+    a.download = filename;
     a.click();
     window.URL.revokeObjectURL(url);
   }

@@ -12,6 +12,10 @@ describe('EmailService', () => {
       providers: [EmailService]
     });
     service = TestBed.inject(EmailService);
+    service.saveCustomConfig({
+      publicKey: 'YOUR_EMAILJS_PUBLIC_KEY',
+      serviceId: 'YOUR_EMAILJS_SERVICE_ID'
+    });
   });
 
   afterEach(() => {
@@ -108,6 +112,10 @@ describe('EmailService', () => {
       customerName: 'Alice',
       customerPhone: '9988776655',
       customerAddress: '45 Avenue',
+      pincode: '600002',
+      distanceKm: 12,
+      pickupEligible: true,
+      fulfillmentMode: 'home_pickup',
       preferredDate: '2026-04-01',
       preferredTimeSlot: '10:00 AM',
       estimatedPrice: 3500,

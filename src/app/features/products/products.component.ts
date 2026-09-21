@@ -43,7 +43,7 @@ export class ProductsComponent implements OnInit {
   }
 
   get filteredProducts(): ProductItem[] {
-    let list = this.dataService.allProducts();
+    let list = this.dataService.publicAllProducts();
 
     // Category filter
     if (this.selectedCategory === 'phone') {

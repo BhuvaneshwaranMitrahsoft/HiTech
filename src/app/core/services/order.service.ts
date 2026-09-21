@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { CustomerDetails, Order, OrderItemRecord } from '../models/order.model';
-import { ServiceBookingRequest } from '../models/service.model';
+import { ServiceBookingRequest, ServiceFulfillmentMode } from '../models/service.model';
 import { CartService } from './cart.service';
 import { EmailService } from './email.service';
 import { AuthService } from './auth.service';
@@ -124,6 +124,10 @@ export class OrderService {
     preferredDate: string;
     preferredTimeSlot: string;
     estimatedPrice: number;
+    pincode?: string;
+    distanceKm?: number;
+    pickupEligible?: boolean;
+    fulfillmentMode: ServiceFulfillmentMode;
   }): Promise<{ success: boolean; booking?: ServiceBookingRequest; message?: string }> {
     if (!bookingData.customerName?.trim() || !bookingData.customerPhone?.trim() || !bookingData.customerAddress?.trim()) {
       return { success: false, message: 'Name, Phone number, and Address are required for service booking.' };
@@ -163,5 +167,82 @@ export class OrderService {
       localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
+  }
+
+  exportOrdersJson(): void {
+    this.downloadJson(`orders-${new Date().toISOString().slice(0, 10)}.json`, this._orders());
+  }
+
+  exportBookingsJson(): void {
+    this.downloadJson(`bookings-${new Date().toISOString().slice(0, 10)}.json`, this._bookings());
+  }
+
+  getLastBackupYear(): number | null {
+    const saved = localStorage.getItem('hitech_orders_last_backup_year');
+    if (!saved) return null;
+    const year = Number(saved);
+    return Number.isFinite(year) ? year : null;
+  }
+
+  markBackupYear(year: number): void {
+    localStorage.setItem('hitech_orders_last_backup_year', String(year));
+  }
+
+  shouldAutoArchive(currentYear = new Date().getFullYear()): boolean {
+    const last = this.getLastBackupYear();
+    if (last == null) {
+      this.markBackupYear(currentYear);
+      return false;
+    }
+    return last < currentYear && (this._orders().length > 0 || this._bookings().length > 0);
+  }
+
+  async archiveYearAndClear(options: { download: boolean; year?: number } = { download: true }): Promise<{
+    year: number;
+    orderCount: number;
+    bookingCount: number;
+    payload: { year: number; archivedAt: string; orders: Order[]; bookings: ServiceBookingRequest[] };
+  }> {
+    const year = options.year ?? (new Date().getFullYear() - 1);
+    const payload = {
+      year,
+      archivedAt: new Date().toISOString(),
+      orders: this._orders(),
+      bookings: this._bookings()
+    };
+
+    await this.emailService.sendYearlyOrderArchive(
+      year,
+      JSON.stringify(payload, null, 2),
+      payload.orders.length,
+      payload.bookings.length
+    );
+
+    if (options.download) {
+      this.downloadJson(`hitech-order-archive-${year}.json`, payload);
+    }
+
+    this._orders.set([]);
+    this._bookings.set([]);
+    localStorage.removeItem(ORDERS_STORAGE_KEY);
+    localStorage.removeItem(BOOKINGS_STORAGE_KEY);
+    this.markBackupYear(new Date().getFullYear());
+
+    return {
+      year,
+      orderCount: payload.orders.length,
+      bookingCount: payload.bookings.length,
+      payload
+    };
+  }
+
+  private downloadJson(filename: string, data: unknown): void {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 }

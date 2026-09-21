@@ -21,12 +21,12 @@ export class DashboardComponent {
 
   get displayedProducts() {
     if (this.activeTab === 'phone') {
-      return this.dataService.products().slice(0, 6);
+      return this.dataService.publicProducts().slice(0, 6);
     }
     if (this.activeTab === 'accessory') {
-      return this.dataService.accessories().slice(0, 6);
+      return this.dataService.publicAccessories().slice(0, 6);
     }
-    return this.dataService.allProducts().slice(0, 8);
+    return this.dataService.publicAllProducts().slice(0, 8);
   }
 
   get popularServices() {

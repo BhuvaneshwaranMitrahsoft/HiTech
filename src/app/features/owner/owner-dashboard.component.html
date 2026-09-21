@@ -19,7 +19,7 @@
     <div class="partner-action-box">
       <a routerLink="/products" class="btn btn-primary btn-lg">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/></svg>
-        Shop Catalog with 15% OFF
+        Shop Catalog with {{ session?.bulkDiscountPercent || 10 }}% OFF
       </a>
       <a routerLink="/cart" class="btn btn-secondary btn-lg">
         Bulk Cart ({{ cartService.totalCount() }})
@@ -37,7 +37,7 @@
   </div>
 
   <div class="bulk-grid">
-    @for (item of dataService.allProducts().slice(0, 4); track item.id) {
+    @for (item of dataService.publicAllProducts().slice(0, 4); track item.id) {
       <div class="bulk-item-card glass-card">
         <div class="thumb-box">
           <img [src]="item.image" [alt]="item.name" />
@@ -48,7 +48,7 @@
 
           <div class="pricing-comparison">
             <div class="retail-p">MRP: ₹{{ item.price | number }}</div>
-            <div class="wholesale-p">Partner Price: <strong>₹{{ (item.price * 0.85) | number:'1.0-0' }}</strong></div>
+            <div class="wholesale-p">Partner Price: <strong>₹{{ (item.price * (1 - (session?.bulkDiscountPercent || 10) / 100)) | number:'1.0-0' }}</strong></div>
           </div>
 
           <button class="btn btn-primary btn-sm add-bulk-btn" (click)="quickAddBulk(item, 5)" [disabled]="!item.inStock">
