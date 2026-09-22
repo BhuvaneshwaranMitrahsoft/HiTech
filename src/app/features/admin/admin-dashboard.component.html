@@ -483,7 +483,7 @@
                     <td>
                       @if (b.fulfillmentMode === 'home_pickup') {
                         <span class="badge badge-success">🚗 Doorstep Pickup</span>
-                        <div class="tbl-sub">Distance: <strong>{{ b.distanceKm != null ? b.distanceKm + ' km' : 'Verified' }}</strong></div>
+                        <div class="tbl-sub">Distance: <strong>{{ b.distanceKm !== null && b.distanceKm !== undefined ? b.distanceKm + ' km' : 'Verified' }}</strong></div>
                       } @else if (b.fulfillmentMode === 'parcel') {
                         <span class="badge badge-purple">📦 Courier / Parcel</span>
                         <div class="tbl-sub">Send to Hub</div>

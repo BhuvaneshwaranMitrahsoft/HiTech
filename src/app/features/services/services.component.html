@@ -116,8 +116,8 @@
 
               <div class="form-group">
                 <label>Distance from Service Hub</label>
-                <div class="distance-pill" [class.eligible]="distanceResult.pickupEligible" [class.ineligible]="distanceResult.distanceKm != null && !distanceResult.pickupEligible">
-                  @if (distanceResult.distanceKm != null) {
+                <div class="distance-pill" [class.eligible]="distanceResult.pickupEligible" [class.ineligible]="distanceResult.distanceKm !== null && !distanceResult.pickupEligible">
+                  @if (distanceResult.distanceKm !== null) {
                     <span><strong>{{ distanceResult.distanceKm }} km</strong> away</span>
                     @if (distanceResult.pickupEligible) {
                       <span class="tag-ok">✓ Within {{ hubConfig.pickupRadiusKm }} km limit</span>
@@ -150,17 +150,17 @@
                 <label
                   class="fulfillment-card"
                   [class.selected]="bookingForm.fulfillmentMode === 'home_pickup'"
-                  [class.disabled]="distanceResult.distanceKm != null && !distanceResult.pickupEligible">
+                  [class.disabled]="distanceResult.distanceKm !== null && !distanceResult.pickupEligible">
                   <input
                     type="radio"
                     name="fulfillmentMode"
                     value="home_pickup"
                     [(ngModel)]="bookingForm.fulfillmentMode"
-                    [disabled]="distanceResult.distanceKm != null && !distanceResult.pickupEligible" />
+                    [disabled]="distanceResult.distanceKm !== null && !distanceResult.pickupEligible" />
                   <div class="card-inner">
                     <div class="f-header">
                       <span class="f-title">🚗 Doorstep Home Pickup</span>
-                      @if (distanceResult.distanceKm != null && !distanceResult.pickupEligible) {
+                      @if (distanceResult.distanceKm !== null && !distanceResult.pickupEligible) {
                         <span class="badge badge-danger">Outside 30 km</span>
                       } @else {
                         <span class="badge badge-success">Free within 30 km</span>
@@ -254,7 +254,7 @@
               <div><strong>Device:</strong> {{ confirmedBooking?.deviceModel }}</div>
               <div><strong>Fulfillment Mode:</strong>
                 @if (confirmedBooking?.fulfillmentMode === 'home_pickup') {
-                  <span class="badge badge-success">🚗 Doorstep Home Pickup @if (confirmedBooking?.distanceKm != null) {({{ confirmedBooking?.distanceKm }} km)}</span>
+                  <span class="badge badge-success">🚗 Doorstep Home Pickup @if (confirmedBooking?.distanceKm !== null && confirmedBooking?.distanceKm !== undefined) {({{ confirmedBooking?.distanceKm }} km)}</span>
                 } @else if (confirmedBooking?.fulfillmentMode === 'parcel') {
                   <span class="badge badge-purple">📦 Courier / Parcel Dispatch</span>
                 } @else {
