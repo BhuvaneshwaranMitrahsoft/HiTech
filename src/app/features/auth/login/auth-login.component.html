@@ -14,7 +14,7 @@
         {{ selectedRole === 'admin' ? 'Administrator Portal' : 'Shop Owner Partner Portal' }}
       </h1>
       <p class="login-sub">
-        Secure static authentication backed by 1-minute email OTP verification.
+        Secure static authentication for administrators and wholesale partners.
       </p>
 
       <!-- Role Selector Tabs -->
@@ -62,9 +62,9 @@
 
       <button type="submit" class="btn btn-primary btn-lg submit-login-btn" [disabled]="isSubmitting">
         @if (isSubmitting) {
-          Verifying & Sending OTP...
+          Signing In...
         } @else {
-          Send 1-Minute Verification OTP
+          Sign In to {{ selectedRole === 'admin' ? 'Admin Console' : 'Partner Workspace' }}
         }
       </button>
 

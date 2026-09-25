@@ -60,12 +60,16 @@ export class AuthLoginComponent implements OnInit {
 
     this.isSubmitting = true;
     try {
-      const res = await this.authService.initiateLogin(this.email, this.password);
+      const res = await this.authService.login(this.email, this.password);
       if (res.success) {
-        this.toastService.show(res.message, 'success', 'OTP Sent');
-        this.router.navigate(['/auth/verify-otp'], {
-          queryParams: { returnUrl: this.returnUrl, role: res.role }
-        });
+        this.toastService.show(res.message, 'success', 'Login Successful');
+        if (this.returnUrl) {
+          this.router.navigateByUrl(this.returnUrl);
+        } else if (res.role === 'admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/owner']);
+        }
       } else {
         this.toastService.show(res.message, 'danger', 'Authentication Failed');
       }

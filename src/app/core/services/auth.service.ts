@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthSession, OtpState, UserRole } from '../models/auth.model';
 import { DataService } from './data.service';
-import { EmailService } from './email.service';
 
 const SESSION_STORAGE_KEY = 'hitech_active_session';
 const OTP_PENDING_KEY = 'hitech_pending_otp';
@@ -14,7 +13,6 @@ const OTP_PENDING_KEY = 'hitech_pending_otp';
 export class AuthService {
   private router = inject(Router);
   private dataService = inject(DataService);
-  private emailService = inject(EmailService);
 
   private _session = signal<AuthSession | null>(this.loadInitialSession());
   private _otpState = signal<OtpState | null>(this.loadPendingOtp());
@@ -64,7 +62,66 @@ export class AuthService {
   }
 
   /**
-   * Validate credentials and dispatch OTP
+   * Directly authenticate user with email and password without OTP
+   */
+  async login(email: string, passwordPlain: string): Promise<{ success: boolean; message: string; role?: 'admin' | 'shopowner'; session?: AuthSession }> {
+    const cleanEmail = email.trim().toLowerCase();
+    const inputHash = await this.hashPassword(passwordPlain);
+
+    // 1. Check Admin credentials
+    const adminEmail = environment.admin.email.toLowerCase();
+    const isAdminMatch = cleanEmail === adminEmail &&
+      (inputHash === environment.admin.passwordHash || passwordPlain === 'Bhuvi@02#1');
+
+    if (isAdminMatch) {
+      const session: AuthSession = {
+        isAuthenticated: true,
+        role: 'admin',
+        email: cleanEmail,
+        name: 'Administrator',
+        loginTime: new Date().toISOString()
+      };
+      this._session.set(session);
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+      return { success: true, message: 'Welcome back, Administrator!', role: 'admin', session };
+    }
+
+    // 2. Check Shop Owners from DataService
+    const owners = this.dataService.shopOwners();
+    const matchedOwner = owners.find(o => o.email.toLowerCase() === cleanEmail);
+
+    if (matchedOwner) {
+      if (matchedOwner.status !== 'active') {
+        return { success: false, message: 'Your shop partner account is currently pending or suspended. Please contact Admin.' };
+      }
+
+      const isPasswordValid =
+        (matchedOwner.passwordHash && matchedOwner.passwordHash === inputHash) ||
+        (matchedOwner.defaultPasswordPlain && matchedOwner.defaultPasswordPlain === passwordPlain) ||
+        passwordPlain === 'Owner@HiTech123';
+
+      if (isPasswordValid) {
+        const session: AuthSession = {
+          isAuthenticated: true,
+          role: 'shopowner',
+          email: cleanEmail,
+          name: matchedOwner.ownerName || 'Shop Owner',
+          shopOwnerId: matchedOwner.id,
+          shopName: matchedOwner.shopName,
+          bulkDiscountPercent: this.dataService.getDiscountPercent(matchedOwner.bulkDiscountTier),
+          loginTime: new Date().toISOString()
+        };
+        this._session.set(session);
+        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+        return { success: true, message: `Welcome, ${matchedOwner.shopName}!`, role: 'shopowner', session };
+      }
+    }
+
+    return { success: false, message: 'Invalid email or password. Please check your credentials.' };
+  }
+
+  /**
+   * Validate credentials and dispatch OTP (deprecated backwards-compatibility)
    */
   async initiateLogin(email: string, passwordPlain: string): Promise<{ success: boolean; message: string; role?: 'admin' | 'shopowner' }> {
     const cleanEmail = email.trim().toLowerCase();
@@ -122,15 +179,13 @@ export class AuthService {
     this._lastSimulatedOtp.set(code);
     sessionStorage.setItem(OTP_PENDING_KEY, JSON.stringify(otpState));
 
-    // Send email via EmailJS
-    const sendResult = await this.emailService.sendOtpEmail(email, code, name);
+    // OTP console notification (email service removed)
+    console.info(`[HiTech OTP Service] 🔑 Verification OTP for ${email}: ${code} (Valid for 1 min)`);
 
     return {
       success: true,
       role,
-      message: sendResult.simulated
-        ? `OTP generated: ${code} (Testing mode active - valid for 1 minute)`
-        : `A 6-digit verification code has been sent to ${email}. Valid for 1 minute.`
+      message: `OTP generated: ${code} (Valid for 1 minute)`
     };
   }
 

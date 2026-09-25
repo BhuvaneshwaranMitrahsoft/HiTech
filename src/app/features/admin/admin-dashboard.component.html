@@ -34,6 +34,24 @@
         <span class="p-lbl">Services</span>
       </div>
     </div>
+
+    <!-- Header Quick-Publish Button & Status -->
+    <div class="admin-header-actions" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+      <button class="btn btn-primary btn-sm" (click)="publishCatalogToGithub()" [disabled]="isPublishingGithub" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; padding: 0.6rem 1.25rem; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);">
+        @if (isPublishingGithub) {
+          <span>🚀 Publishing Live...</span>
+        } @else {
+          <span>🚀 Publish Live (CI/CD)</span>
+        }
+      </button>
+      <div style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.35rem;">
+        <span [style.background]="publishService.isConfigured() ? '#10b981' : '#f59e0b'" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+        <span>{{ publishService.isConfigured() ? 'CI/CD Connected' : 'PAT Not Set' }}</span>
+        @if (lastSyncTime) {
+          <span style="opacity: 0.7;">• Synced: {{ lastSyncTime }}</span>
+        }
+      </div>
+    </div>
   </div>
 
   <!-- Admin Main Navigation Tabs -->
@@ -60,7 +78,7 @@
 
     <button class="adm-tab" [class.active]="activeTab === 'settings'" (click)="setTab('settings')">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Data Sync & EmailJS
+      Data Sync & CI/CD
     </button>
   </div>
 
@@ -535,14 +553,41 @@
         <div class="card-header-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
           <div>
-            <h3 style="margin: 0; font-size: 1.15rem;">Automated GitHub Catalog Sync (Deploy to Render)</h3>
+            <h3 style="margin: 0; font-size: 1.15rem;">Dual-Mode CI/CD Sync & GitHub Direct Publishing</h3>
             <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.85rem;">
-              One-click publish puts updated JSON files directly into your GitHub repository via GitHub REST API. GitHub Actions will then automatically deploy changes live to Render.
+              Manage how admin modifications reach your live Render static deployment. Supports both automated scheduled cron jobs and immediate manual publish.
             </p>
           </div>
         </div>
 
-        <form (ngSubmit)="saveGithubConfig()" style="margin-top: 1.25rem;">
+        <!-- Dual Mode Info Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.25rem;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <span style="font-size: 1.25rem;">⏰</span>
+              <strong style="color: var(--text-primary); font-size: 0.95rem;">Mode 1: Automated Scheduled Sync</strong>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem; line-height: 1.4;">
+              Runs automatically every day at <strong>00:00 UTC (05:30 AM IST)</strong> via GitHub Actions (<code>admin-sync-scheduled.yml</code>). Validates all data JSON files and deploys to Render.
+            </p>
+            <span class="badge badge-cyan" style="font-size: 0.7rem;">Active Cron: 0 0 * * *</span>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <span style="font-size: 1.25rem;">🚀</span>
+              <strong style="color: var(--text-primary); font-size: 0.95rem;">Mode 2: Immediate Manual Publish</strong>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem; line-height: 1.4;">
+              Pushes live catalog changes (products, accessories, shop owners, services) directly into your repository and triggers immediate GitHub Actions deployment.
+            </p>
+            <span class="badge" [style.background]="lastSyncTime ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.1)'" style="font-size: 0.7rem; color: #10b981;">
+              {{ lastSyncTime ? 'Last Synced: ' + lastSyncTime : 'Ready for Initial Sync' }}
+            </span>
+          </div>
+        </div>
+
+        <form (ngSubmit)="saveGithubConfig()" style="margin-top: 1.5rem;">
           <div class="form-row">
             <div class="form-group">
               <label>GitHub Repository Owner</label>
@@ -574,34 +619,32 @@
 
             <button type="button" class="btn btn-primary" (click)="publishCatalogToGithub()" [disabled]="isPublishingGithub">
               @if (isPublishingGithub) {
-                🚀 Publishing to GitHub...
+                🚀 Publishing Live & Triggering CI/CD...
               } @else {
-                🚀 Publish Catalog to GitHub (Auto-Deploy)
+                🚀 Publish All Catalogs (Commit + CI/CD Deploy)
+              }
+            </button>
+
+            <button type="button" class="btn btn-outline" (click)="triggerPipelineOnly()" [disabled]="isTriggeringPipeline">
+              @if (isTriggeringPipeline) {
+                ⚡ Triggering Pipeline...
+              } @else {
+                ⚡ Trigger CI/CD Pipeline Only
               }
             </button>
           </div>
 
           @if (!githubConfig.token) {
             <p class="tbl-sub" style="margin-top: 0.75rem; color: #f59e0b;">
-              💡 <strong>GitHub token not set:</strong> You can still save products locally and use <strong>Email Catalog Backup</strong> or <strong>Download JSON</strong> below to update your repo manually.
+              💡 <strong>GitHub token not set:</strong> Add your GitHub PAT to enable one-click publishing and immediate CI/CD pipeline triggers. You can also download updated JSON files below.
             </p>
           }
         </form>
       </div>
 
       <!-- 2. CATALOG BACKUP & MANUAL DOWNLOADS -->
-      <h3 class="sub-heading">Catalog Downloads & Email Backup</h3>
-      <p class="panel-desc">Download updated static JSON files or email a snapshot directly to the administrator.</p>
-
-      <div style="margin-bottom: 1.5rem;">
-        <button class="btn btn-purple btn-sm" (click)="emailCatalogBackup()" [disabled]="isSendingCatalogBackup">
-          @if (isSendingCatalogBackup) {
-            📧 Sending Catalog Backup...
-          } @else {
-            📧 Email Catalog Backup JSON to Admin
-          }
-        </button>
-      </div>
+      <h3 class="sub-heading">Catalog Downloads & Manual Backup</h3>
+      <p class="panel-desc">Download updated static JSON files to update repository assets directly.</p>
 
       <div class="export-grid">
         <div class="export-card glass-card">
@@ -664,7 +707,7 @@
           <h4>Yearly Archive & Clean</h4>
           <p>
             Last archive year: <strong>{{ lastBackupYear || 'None' }}</strong>.<br />
-            Downloads archive JSON, emails backup, and resets order list.
+            Downloads archive JSON and resets active order list.
           </p>
           <button class="btn btn-secondary btn-sm" (click)="runYearlyArchive()" [disabled]="isArchivingOrders">
             @if (isArchivingOrders) {
@@ -719,9 +762,9 @@
 
       <div class="settings-divider"></div>
 
-      <!-- 5. EMAILJS CONFIGURATION -->
-      <h3 class="sub-heading">EmailJS API Keys Configuration (OTP, Orders & Backups)</h3>
-      <p class="panel-desc">Configure your actual EmailJS keys to send real emails to customers, shop owners, and administrators.</p>
+      <!-- 5. EMAILJS CONFIGURATION (ORDERS & BOOKINGS) -->
+      <h3 class="sub-heading">EmailJS API Keys (Order & Service Booking Notifications)</h3>
+      <p class="panel-desc">Configure EmailJS keys to send real-time alerts whenever a customer places an order or books a repair.</p>
 
       <form (ngSubmit)="saveEmailSettings()" class="email-settings-form">
         <div class="form-row">
@@ -738,19 +781,39 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label>OTP Email Template ID</label>
-            <input type="text" [(ngModel)]="emailSettings.otpTemplateId" name="otpTemplateId" class="form-control" placeholder="e.g. template_otp" />
+            <label>Order Notification Template ID</label>
+            <input type="text" [(ngModel)]="emailSettings.orderTemplateId" name="orderTemplateId" class="form-control" placeholder="e.g. template_tr8bpct" />
           </div>
 
           <div class="form-group">
-            <label>Order & Dispatch Template ID</label>
-            <input type="text" [(ngModel)]="emailSettings.orderTemplateId" name="orderTemplateId" class="form-control" placeholder="e.g. template_order" />
+            <label>Service Booking Template ID</label>
+            <input type="text" [(ngModel)]="emailSettings.serviceBookingTemplateId" name="serviceBookingTemplateId" class="form-control" placeholder="e.g. template_service_booking" />
           </div>
         </div>
 
         <div class="form-group">
           <label>Admin Notification Recipient Email</label>
           <input type="email" [(ngModel)]="emailSettings.notificationEmail" name="notificationEmail" class="form-control" placeholder="bhuvaneshwaranaj@gmail.com" />
+        </div>
+
+        <!-- EMAILJS HTML TEMPLATES COPY BOX -->
+        <div class="quick-template-copy-box" style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.25rem; margin: 1.5rem 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <strong style="color: var(--text-white); font-size: 0.95rem;">Standard Clean EmailJS HTML Templates</strong>
+              <p style="margin: 0.25rem 0 0; font-size: 0.8rem; color: var(--text-muted);">
+                In EmailJS Dashboard &rarr; <em>Email Templates</em> &rarr; Click <em>Edit Content</em> &rarr; Choose <strong>Code Editor</strong> &rarr; Paste and Save.
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-sm btn-secondary" (click)="copyOrderTemplateHtml()">
+                📋 Copy Order Email Template HTML
+              </button>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="copyServiceTemplateHtml()">
+                📋 Copy Service Booking Template HTML
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="settings-actions">

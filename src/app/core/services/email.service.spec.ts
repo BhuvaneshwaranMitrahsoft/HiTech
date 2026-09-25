@@ -34,14 +34,6 @@ describe('EmailService', () => {
     expect(config.publicKey).toBe('my_key');
   });
 
-  it('should send simulated OTP email when unconfigured', async () => {
-    const result = await service.sendOtpEmail('test@example.com', '123456', 'Tester');
-    expect(result.success).toBeTrue();
-    expect(result.simulated).toBeTrue();
-    expect(service.logs().length).toBeGreaterThan(0);
-    expect(service.logs()[0].type).toBe('OTP');
-  });
-
   it('should send simulated order notification', async () => {
     const mockOrder: Order = {
       id: 'ord-1',
@@ -132,9 +124,9 @@ describe('EmailService', () => {
   it('should load pre-existing logs from localStorage', () => {
     const preExisting = [{
       id: 'log-old',
-      type: 'OTP' as const,
+      type: 'ORDER_NOTIFICATION' as const,
       recipient: 'old@test.com',
-      subject: 'Old OTP',
+      subject: 'Old Order',
       payload: {},
       sentAt: '2026-01-01',
       status: 'SIMULATED_LOCAL' as const

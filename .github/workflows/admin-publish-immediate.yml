@@ -1,0 +1,74 @@
+name: Immediate Admin Publish Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      trigger_reason:
+        description: 'Reason for immediate publish'
+        required: true
+        default: 'Admin live changes publish'
+      actor_email:
+        description: 'Admin or Actor triggering the publish'
+        required: false
+        default: 'admin'
+
+jobs:
+  immediate-publish:
+    name: Immediate Build & Deploy Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Validate Public Data Catalogs
+        run: |
+          echo "Triggered by: ${{ github.event.inputs.actor_email }}"
+          echo "Reason: ${{ github.event.inputs.trigger_reason }}"
+          node -e "
+            const fs = require('fs');
+            const files = ['products.json', 'accessories.json', 'services.json', 'shop-owners.json'];
+            for (const f of files) {
+              const p = 'public/data/' + f;
+              if (fs.existsSync(p)) {
+                try {
+                  const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+                  console.log('✓ ' + f + ' validated (' + (Array.isArray(data) ? data.length + ' items' : 'object') + ')');
+                } catch (err) {
+                  console.error('✗ ' + f + ' JSON syntax error:', err.message);
+                  process.exit(1);
+                }
+              }
+            }
+          "
+
+      - name: Production Build
+        run: npm run build -- --configuration=production
+
+      - name: Trigger Immediate Render Production Deploy
+        if: env.RENDER_PROD_DEPLOY_HOOK != ''
+        env:
+          RENDER_PROD_DEPLOY_HOOK: ${{ secrets.RENDER_PROD_DEPLOY_HOOK }}
+        run: |
+          echo "Triggering immediate Render deployment..."
+          curl -X POST "$RENDER_PROD_DEPLOY_HOOK"
+
+      - name: Alternative Render API Deploy
+        if: env.RENDER_API_KEY != '' && env.RENDER_PROD_SERVICE_ID != ''
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+        run: |
+          curl -X POST "https://api.render.com/v1/services/$RENDER_PROD_SERVICE_ID/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json"

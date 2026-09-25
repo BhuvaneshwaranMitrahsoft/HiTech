@@ -6,7 +6,7 @@
     "startingPrice": 1899,
     "estimatedTime": "45 - 60 Minutes",
     "warrantyPeriod": "6 Months Warranty",
-    "description": "Premium Grade-A original display replacement with precision touch sensitivity, true-tone calibration and zero dead pixels.",
+    "description": "Premium Grade-A original display replacement with precision touch sensitivity, true-tone calibration and zero dead pixels for all 2021-2026 devices.",
     "icon": "screen",
     "isPopular": true,
     "available": true,
@@ -102,6 +102,42 @@
       "Official OEM firmware flashing",
       "Safe storage retrieval",
       "Malware & spyware scanning"
+    ]
+  },
+  {
+    "id": "srv-7",
+    "name": "Laser Back Glass & Titanium/Alloy Housing Restoration",
+    "category": "Hardware",
+    "startingPrice": 1699,
+    "estimatedTime": "60 - 90 Minutes",
+    "warrantyPeriod": "6 Months Warranty",
+    "description": "High-precision computer-guided laser detachment for cracked rear glass without opening internal components on iPhone 12-16 and modern flagships.",
+    "icon": "zap",
+    "isPopular": true,
+    "available": true,
+    "includedPoints": [
+      "Automated cold laser epoxy removal",
+      "Original frosted/matte rear glass panel",
+      "Preserves Qi & MagSafe charging coils",
+      "Factory seal re-adhesion"
+    ]
+  },
+  {
+    "id": "srv-8",
+    "name": "Foldable Screen UTG & Gear Hinge Servicing",
+    "category": "Screen Repair",
+    "startingPrice": 3999,
+    "estimatedTime": "2 - 3 Hours",
+    "warrantyPeriod": "6 Months Warranty",
+    "description": "Specialized service for Galaxy Z Fold/Flip, Razr, and OnePlus Open foldable displays, crease bubbles, and stiff or crunchy hinges.",
+    "icon": "screen",
+    "isPopular": false,
+    "available": true,
+    "includedPoints": [
+      "Ultra-Thin Glass (UTG) protective layer replacement",
+      "Micro-gear hinge cleaning & re-lubrication",
+      "Flex cable ribbon alignment",
+      "Free anti-bubble PET pre-applied protector"
     ]
   }
 ]

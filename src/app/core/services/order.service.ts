@@ -4,6 +4,7 @@ import { ServiceBookingRequest, ServiceFulfillmentMode } from '../models/service
 import { CartService } from './cart.service';
 import { EmailService } from './email.service';
 import { AuthService } from './auth.service';
+import { CatalogPublishService } from './catalog-publish.service';
 
 const ORDERS_STORAGE_KEY = 'hitech_customer_orders';
 const BOOKINGS_STORAGE_KEY = 'hitech_service_bookings';
@@ -15,6 +16,7 @@ export class OrderService {
   private cartService = inject(CartService);
   private emailService = inject(EmailService);
   private authService = inject(AuthService);
+  private publishService = inject(CatalogPublishService);
 
   private _orders = signal<Order[]>(this.loadOrders());
   private _bookings = signal<ServiceBookingRequest[]>(this.loadBookings());
@@ -107,6 +109,12 @@ export class OrderService {
     this._lastPlacedOrder.set(newOrder);
     this.cartService.clearCart();
 
+    // Trigger immediate pipeline push if configured
+    if (this.publishService.isConfigured()) {
+      this.publishService.triggerImmediatePipeline(`Customer Order #${newOrder.orderNumber} placed`)
+        .catch(err => console.warn('Pipeline dispatch skipped:', err));
+    }
+
     return { success: true, order: newOrder };
   }
 
@@ -150,6 +158,13 @@ export class OrderService {
     });
 
     this._lastPlacedBooking.set(booking);
+
+    // Trigger immediate pipeline push if configured
+    if (this.publishService.isConfigured()) {
+      this.publishService.triggerImmediatePipeline(`Repair Booking #${booking.id} (${booking.serviceName})`)
+        .catch(err => console.warn('Pipeline dispatch skipped:', err));
+    }
+
     return { success: true, booking };
   }
 
@@ -210,13 +225,6 @@ export class OrderService {
       orders: this._orders(),
       bookings: this._bookings()
     };
-
-    await this.emailService.sendYearlyOrderArchive(
-      year,
-      JSON.stringify(payload, null, 2),
-      payload.orders.length,
-      payload.bookings.length
-    );
 
     if (options.download) {
       this.downloadJson(`hitech-order-archive-${year}.json`, payload);

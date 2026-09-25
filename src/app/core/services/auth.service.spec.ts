@@ -109,4 +109,12 @@ describe('AuthService', () => {
     expect(service.otpState()).toBeNull();
     expect(service.lastSimulatedOtp()).toBeNull();
   });
+
+  it('should directly log in admin without OTP using login()', async () => {
+    const result = await service.login('bhuvaneshwaranaj@gmail.com', 'Bhuvi@02#1');
+    expect(result.success).toBeTrue();
+    expect(result.role).toBe('admin');
+    expect(service.isAuthenticated()).toBeTrue();
+    expect(service.isAdmin()).toBeTrue();
+  });
 });

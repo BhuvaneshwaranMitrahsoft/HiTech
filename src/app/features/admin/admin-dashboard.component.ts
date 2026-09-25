@@ -13,6 +13,7 @@ import { ProductItem, ProductSpecs } from '../../core/models/product.model';
 import { ServiceBookingItem, ServiceBookingRequest } from '../../core/models/service.model';
 import { ShopOwner } from '../../core/models/shop-owner.model';
 import { Order } from '../../core/models/order.model';
+import { ORDER_NOTIFICATION_TEMPLATE_HTML, SERVICE_BOOKING_TEMPLATE_HTML } from '../../core/constants/email-templates';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -86,7 +87,8 @@ export class AdminDashboardComponent implements OnInit {
     token: ''
   };
   isPublishingGithub: boolean = false;
-  isSendingCatalogBackup: boolean = false;
+  isTriggeringPipeline: boolean = false;
+  lastSyncTime: string = localStorage.getItem('hitech_last_sync_time') || '';
 
   // Hub Settings
   hubSettings: HubConfig = {
@@ -101,12 +103,12 @@ export class AdminDashboardComponent implements OnInit {
   lastBackupYear: number | null = null;
   isArchivingOrders: boolean = false;
 
-  // EmailJS Settings form
+  // EmailJS Settings form (Order & Repair Booking Notifications)
   emailSettings = {
     publicKey: '',
     serviceId: '',
-    otpTemplateId: '',
     orderTemplateId: '',
+    serviceBookingTemplateId: '',
     notificationEmail: ''
   };
 
@@ -376,6 +378,23 @@ export class AdminDashboardComponent implements OnInit {
         'success',
         'Partner Approved'
       );
+
+      // Auto-sync via CI/CD if GitHub is configured
+      if (this.publishService.isConfigured()) {
+        const files = [{
+          path: 'public/data/shop-owners.json',
+          content: JSON.stringify(this.dataService.shopOwners(), null, 2)
+        }];
+        this.publishService.publishAllAndTriggerPipeline(
+          files,
+          `feat(shop): approved wholesale partner ${approved.shopName}`,
+          `Wholesale partner approved: ${approved.shopName}`
+        ).then(res => {
+          if (res.success) {
+            this.toastService.show('Credentials pushed directly to GitHub and deployed via CI/CD!', 'info');
+          }
+        }).catch(err => console.warn('Auto publish failed:', err));
+      }
     }
     this.approvingOwner = null;
   }
@@ -406,6 +425,24 @@ export class AdminDashboardComponent implements OnInit {
         this.editOwnerTier
       );
       this.toastService.show(`Credentials updated for ${this.editingOwner.shopName}`, 'success');
+
+      // Auto-sync via CI/CD if configured
+      if (this.publishService.isConfigured()) {
+        const files = [{
+          path: 'public/data/shop-owners.json',
+          content: JSON.stringify(this.dataService.shopOwners(), null, 2)
+        }];
+        this.publishService.publishAllAndTriggerPipeline(
+          files,
+          `feat(shop): updated credentials for ${this.editingOwner.shopName}`,
+          `Shop credentials updated: ${this.editingOwner.shopName}`
+        ).then(res => {
+          if (res.success) {
+            this.toastService.show('Updated credentials pushed to GitHub repo!', 'info');
+          }
+        }).catch(err => console.warn('Auto publish failed:', err));
+      }
+
       this.editingOwner = null;
     }
   }
@@ -468,10 +505,16 @@ export class AdminDashboardComponent implements OnInit {
       ];
 
       const commitMsg = `feat(catalog): sync live catalog update from admin console [${new Date().toISOString()}]`;
-      const res = await this.publishService.publishFiles(files, commitMsg);
+      const res = await this.publishService.publishAllAndTriggerPipeline(
+        files,
+        commitMsg,
+        'Admin Console Immediate Publish'
+      );
 
       if (res.success) {
-        this.toastService.show(res.message, 'success', 'Catalog Published');
+        this.toastService.show(res.message, 'success', 'Catalog Published & Pipeline Triggered');
+        this.lastSyncTime = new Date().toLocaleTimeString();
+        localStorage.setItem('hitech_last_sync_time', this.lastSyncTime);
       } else {
         this.toastService.show(res.message, 'danger', 'Publish Failed');
       }
@@ -482,23 +525,24 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  async emailCatalogBackup(): Promise<void> {
-    this.isSendingCatalogBackup = true;
-    try {
-      const snapshot = this.dataService.getCatalogSnapshot();
-      const summary = `Catalog Snapshot: ${snapshot.products.length} phones, ${snapshot.accessories.length} accessories, ${snapshot.services.length} services, ${snapshot.shopOwners.length} partners.`;
-      const json = JSON.stringify(snapshot, null, 2);
+  async triggerPipelineOnly(): Promise<void> {
+    if (!this.publishService.isConfigured()) {
+      this.toastService.show('Please provide a GitHub Personal Access Token (PAT) before triggering pipeline.', 'warning');
+      return;
+    }
 
-      const res = await this.emailService.sendCatalogBackupEmail(summary, json);
+    this.isTriggeringPipeline = true;
+    try {
+      const res = await this.publishService.triggerImmediatePipeline('Admin manual trigger from console');
       if (res.success) {
-        this.toastService.show('Catalog backup dispatched to administrator email!', 'success');
+        this.toastService.show(res.message, 'success', 'CI/CD Pipeline Dispatched');
       } else {
-        this.toastService.show('Failed to send catalog backup email.', 'danger');
+        this.toastService.show(res.message, 'danger', 'Pipeline Trigger Failed');
       }
-    } catch {
-      this.toastService.show('Error sending catalog backup email.', 'danger');
+    } catch (e: any) {
+      this.toastService.show(e?.message || 'Triggering pipeline failed', 'danger');
     } finally {
-      this.isSendingCatalogBackup = false;
+      this.isTriggeringPipeline = false;
     }
   }
 
@@ -570,5 +614,29 @@ export class AdminDashboardComponent implements OnInit {
   saveEmailSettings(): void {
     this.emailService.saveCustomConfig(this.emailSettings);
     this.toastService.show('EmailJS configuration updated!', 'success');
+  }
+
+  copyOrderTemplateHtml(): void {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(ORDER_NOTIFICATION_TEMPLATE_HTML).then(() => {
+        this.toastService.show('Order Notification HTML template copied! Paste it into EmailJS Code Editor.', 'success');
+      }).catch(() => {
+        this.toastService.show('Please copy from email-templates/order-notification.html', 'info');
+      });
+    } else {
+      this.toastService.show('Please copy from email-templates/order-notification.html', 'info');
+    }
+  }
+
+  copyServiceTemplateHtml(): void {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(SERVICE_BOOKING_TEMPLATE_HTML).then(() => {
+        this.toastService.show('Service Booking HTML template copied! Paste it into EmailJS Code Editor.', 'success');
+      }).catch(() => {
+        this.toastService.show('Please copy from email-templates/service-booking-notification.html', 'info');
+      });
+    } else {
+      this.toastService.show('Please copy from email-templates/service-booking-notification.html', 'info');
+    }
   }
 }

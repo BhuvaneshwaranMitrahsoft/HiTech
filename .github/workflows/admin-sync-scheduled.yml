@@ -1,0 +1,73 @@
+name: Scheduled Admin Catalog Sync
+
+on:
+  schedule:
+    # Runs daily at 00:00 UTC (05:30 AM IST)
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual sync trigger'
+        required: false
+        default: 'Manual scheduled job test'
+
+jobs:
+  validate-and-sync:
+    name: Validate Catalog & Sync
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Validate Public Data JSON Files
+        run: |
+          node -e "
+            const fs = require('fs');
+            const files = ['products.json', 'accessories.json', 'services.json', 'shop-owners.json'];
+            for (const f of files) {
+              const p = 'public/data/' + f;
+              if (fs.existsSync(p)) {
+                try {
+                  const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+                  console.log('✓ ' + f + ' is valid JSON (' + (Array.isArray(data) ? data.length + ' items' : 'object') + ')');
+                } catch (err) {
+                  console.error('✗ ' + f + ' JSON syntax error:', err.message);
+                  process.exit(1);
+                }
+              } else {
+                console.warn('⚠ ' + f + ' not found in public/data/');
+              }
+            }
+          "
+
+      - name: Build Application Validation
+        run: npm run build -- --configuration=production
+
+      - name: Trigger Render Production Deploy
+        if: env.RENDER_PROD_DEPLOY_HOOK != ''
+        env:
+          RENDER_PROD_DEPLOY_HOOK: ${{ secrets.RENDER_PROD_DEPLOY_HOOK }}
+        run: |
+          echo "Triggering Render Production Deploy Hook..."
+          curl -X POST "$RENDER_PROD_DEPLOY_HOOK"
+
+      - name: Alternative Render API Deploy
+        if: env.RENDER_API_KEY != '' && env.RENDER_PROD_SERVICE_ID != ''
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+        run: |
+          curl -X POST "https://api.render.com/v1/services/$RENDER_PROD_SERVICE_ID/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json"

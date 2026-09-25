@@ -1,0 +1,219 @@
+export const ORDER_NOTIFICATION_TEMPLATE_HTML = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Order Notification - HiTech</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0f172a; padding: 30px 15px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card Container -->
+        <table role="presentation" width="100%" style="max-width: 620px; background-color: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);">
+          
+          <!-- Brand Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #1a8fe3 0%, #38bdf8 100%); padding: 32px 30px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">HiTech</h1>
+              <p style="margin: 6px 0 0; color: #e0f2fe; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Mobiles &bull; Spares &bull; Expert Repairs</p>
+            </td>
+          </tr>
+
+          <!-- Notification Status Banner -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 18px 30px; border-bottom: 1px solid #e2e8f0; text-align: center;">
+              <span style="display: inline-block; background-color: #ecfdf5; color: #059669; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #a7f3d0;">
+                &#10003; Order Confirmed
+              </span>
+              <h2 style="margin: 10px 0 4px; color: #0f172a; font-size: 20px; font-weight: 700;">Order #{{order_number}}</h2>
+              <p style="margin: 0; color: #64748b; font-size: 13px;">Placed on {{order_date}} &bull; <strong>{{order_type}}</strong></p>
+            </td>
+          </tr>
+
+          <!-- Customer Information -->
+          <tr>
+            <td style="padding: 24px 30px 10px;">
+              <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #1a8fe3; padding-bottom: 6px; display: inline-block;">
+                Customer & Delivery Details
+              </h3>
+              <table role="presentation" width="100%" style="font-size: 14px; line-height: 1.6; color: #334155;">
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Name:</strong></td>
+                  <td style="color: #0f172a; font-weight: 600; padding: 4px 0;">{{customer_name}}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Phone / WhatsApp:</strong></td>
+                  <td style="color: #0f172a; font-weight: 600; padding: 4px 0;">{{customer_phone}}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Email:</strong></td>
+                  <td style="color: #0f172a; padding: 4px 0;">{{customer_email}}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0; vertical-align: top;"><strong>Delivery Address:</strong></td>
+                  <td style="color: #0f172a; padding: 4px 0;">{{delivery_address}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Items Ordered Summary -->
+          <tr>
+            <td style="padding: 15px 30px;">
+              <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #1a8fe3; padding-bottom: 6px; display: inline-block;">
+                Items Purchased
+              </h3>
+              <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; font-family: monospace, Courier, sans-serif; font-size: 13px; line-height: 1.8; color: #0f172a; white-space: pre-line;">{{items_summary}}</div>
+            </td>
+          </tr>
+
+          <!-- Price Breakdown Table -->
+          <tr>
+            <td style="padding: 10px 30px 24px;">
+              <table role="presentation" width="100%" style="border-top: 1px solid #e2e8f0; padding-top: 12px; font-size: 14px;">
+                <tr>
+                  <td style="color: #64748b; padding: 4px 0;">Items Subtotal</td>
+                  <td align="right" style="color: #0f172a; font-weight: 600; padding: 4px 0;">{{subtotal}}</td>
+                </tr>
+                <tr>
+                  <td style="color: #64748b; padding: 4px 0;">Express Delivery Charge</td>
+                  <td align="right" style="color: #0f172a; font-weight: 600; padding: 4px 0;">{{delivery_fee}}</td>
+                </tr>
+                <tr>
+                  <td style="color: #059669; padding: 4px 0;">Partner / Promo Discount</td>
+                  <td align="right" style="color: #059669; font-weight: 600; padding: 4px 0;">- {{discount}}</td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="border-top: 2px solid #0f172a; padding-top: 10px; margin-top: 6px;"></td>
+                </tr>
+                <tr>
+                  <td style="color: #0f172a; font-size: 16px; font-weight: 800; padding: 4px 0;">Total Amount Payable</td>
+                  <td align="right" style="color: #1a8fe3; font-size: 20px; font-weight: 800; padding: 4px 0;">{{total_amount}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer Information -->
+          <tr>
+            <td style="background-color: #f1f5f9; padding: 22px 30px; border-top: 1px solid #e2e8f0; text-align: center; color: #64748b; font-size: 12px; line-height: 1.6;">
+              <p style="margin: 0 0 6px;"><strong>HiTech Service & Retail Hub</strong></p>
+              <p style="margin: 0 0 6px;">Anna Salai, Chennai, Tamil Nadu &bull; Support: bhuvaneshwaranaj@gmail.com</p>
+              <p style="margin: 0; color: #94a3b8;">This is an automated dispatch from the HiTech store console.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+export const SERVICE_BOOKING_TEMPLATE_HTML = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Repair Service Booking - HiTech</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0f172a; padding: 30px 15px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card Container -->
+        <table role="presentation" width="100%" style="max-width: 620px; background-color: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);">
+          
+          <!-- Brand Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%); padding: 32px 30px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">HiTech Care</h1>
+              <p style="margin: 6px 0 0; color: #e9d5ff; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Mobile Repair Center & Doorstep Diagnostic</p>
+            </td>
+          </tr>
+
+          <!-- Appointment Status Banner -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 18px 30px; border-bottom: 1px solid #e2e8f0; text-align: center;">
+              <span style="display: inline-block; background-color: #ede9fe; color: #7c3aed; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #ddd6fe;">
+                &#9881; Appointment Scheduled
+              </span>
+              <h2 style="margin: 10px 0 4px; color: #0f172a; font-size: 20px; font-weight: 700;">Booking #{{booking_id}}</h2>
+              <p style="margin: 0; color: #64748b; font-size: 13px;">Requested on {{booking_date}} &bull; Mode: <strong>{{fulfillment_mode}}</strong></p>
+            </td>
+          </tr>
+
+          <!-- Device & Issue Summary -->
+          <tr>
+            <td style="padding: 24px 30px 10px;">
+              <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #7c3aed; padding-bottom: 6px; display: inline-block;">
+                Service & Device Information
+              </h3>
+              <table role="presentation" width="100%" style="font-size: 14px; line-height: 1.6; color: #334155;">
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Required Service:</strong></td>
+                  <td style="color: #0f172a; font-weight: 700; padding: 4px 0;">{{service_name}}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Device Model:</strong></td>
+                  <td style="color: #0f172a; font-weight: 600; padding: 4px 0;">{{device_model}}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0; vertical-align: top;"><strong>Reported Issue:</strong></td>
+                  <td style="color: #475569; padding: 4px 0; background-color: #f8fafc; border-radius: 6px; padding: 6px 10px;">{{issue_description}}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Preferred Time Slot:</strong></td>
+                  <td style="color: #7c3aed; font-weight: 700; padding: 4px 0;">{{preferred_slot}}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Estimated Quote:</strong></td>
+                  <td style="color: #059669; font-size: 16px; font-weight: 800; padding: 4px 0;">{{estimated_price}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Customer & Contact Details -->
+          <tr>
+            <td style="padding: 15px 30px 24px;">
+              <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #7c3aed; padding-bottom: 6px; display: inline-block;">
+                Customer & Location
+              </h3>
+              <table role="presentation" width="100%" style="font-size: 14px; line-height: 1.6; color: #334155; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px;">
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Customer Name:</strong></td>
+                  <td style="color: #0f172a; font-weight: 600; padding: 4px 0;">{{customer_name}}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Phone:</strong></td>
+                  <td style="color: #0f172a; font-weight: 600; padding: 4px 0;">{{customer_phone}}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0; vertical-align: top;"><strong>Service Address:</strong></td>
+                  <td style="color: #0f172a; padding: 4px 0;">{{customer_address}} (Pincode: {{pincode}})</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; padding: 4px 0;"><strong>Distance from Hub:</strong></td>
+                  <td style="color: #0f172a; padding: 4px 0;">{{distance_km}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer Information -->
+          <tr>
+            <td style="background-color: #f1f5f9; padding: 22px 30px; border-top: 1px solid #e2e8f0; text-align: center; color: #64748b; font-size: 12px; line-height: 1.6;">
+              <p style="margin: 0 0 6px;"><strong>HiTech Technical Service Center</strong></p>
+              <p style="margin: 0 0 6px;">Anna Salai, Chennai, Tamil Nadu &bull; Diagnostic Hotline: bhuvaneshwaranaj@gmail.com</p>
+              <p style="margin: 0; color: #94a3b8;">This is an automated appointment notification dispatched from the HiTech console.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;

@@ -93,11 +93,80 @@ export class CatalogPublishService {
 
       return {
         success: true,
-        message: `Published ${files.length} catalog files to ${cfg.owner}/${cfg.repo} (${cfg.branch}). Render will update after GitHub Actions deploy.`
+        message: `Published ${files.length} catalog files to ${cfg.owner}/${cfg.repo} (${cfg.branch}).`
       };
     } catch (err: any) {
       const detail = err?.error?.message || err?.message || 'GitHub publish failed';
       return { success: false, message: detail };
     }
+  }
+
+  /**
+   * Trigger immediate GitHub Actions workflow_dispatch on admin-publish-immediate.yml
+   */
+  async triggerImmediatePipeline(reason: string = 'Admin changes publish', actorEmail?: string): Promise<{ success: boolean; message: string }> {
+    const cfg = this.getConfig();
+    if (!this.isConfigured()) {
+      return {
+        success: false,
+        message: 'GitHub token is not configured. Please save your GitHub PAT in settings.'
+      };
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${cfg.token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    });
+
+    const workflowUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/actions/workflows/admin-publish-immediate.yml/dispatches`;
+
+    try {
+      await firstValueFrom(
+        this.http.post(workflowUrl, {
+          ref: cfg.branch,
+          inputs: {
+            trigger_reason: reason,
+            actor_email: actorEmail || 'admin'
+          }
+        }, { headers })
+      );
+
+      return {
+        success: true,
+        message: `CI/CD pipeline triggered successfully on ${cfg.owner}/${cfg.repo} (${cfg.branch})!`
+      };
+    } catch (err: any) {
+      const detail = err?.error?.message || err?.message || 'Failed to dispatch workflow';
+      return { success: false, message: `Pipeline trigger failed: ${detail}` };
+    }
+  }
+
+  /**
+   * Commits modified catalog files and triggers immediate deployment pipeline
+   */
+  async publishAllAndTriggerPipeline(
+    files: PublishFile[],
+    commitMessage: string,
+    reason: string = 'Live catalog publish'
+  ): Promise<{ success: boolean; message: string }> {
+    const publishRes = await this.publishFiles(files, commitMessage);
+    if (!publishRes.success) {
+      return publishRes;
+    }
+
+    // After files are successfully committed to repository, trigger immediate pipeline dispatch
+    const pipelineRes = await this.triggerImmediatePipeline(reason);
+    if (!pipelineRes.success) {
+      return {
+        success: true,
+        message: `${publishRes.message} (Note: Direct pipeline dispatch: ${pipelineRes.message})`
+      };
+    }
+
+    return {
+      success: true,
+      message: `Changes committed to ${this.getConfig().branch} and immediate deploy pipeline triggered!`
+    };
   }
 }

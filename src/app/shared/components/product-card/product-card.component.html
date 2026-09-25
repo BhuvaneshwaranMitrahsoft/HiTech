@@ -1,30 +1,33 @@
 <div class="product-card glass-card" [class.out-of-stock]="!product.inStock">
-  <!-- Card Header / Badges -->
-  <div class="card-badges">
-    <span class="badge badge-brand">{{ product.brand }}</span>
-    @if (!product.inStock) {
-      <span class="badge badge-danger">Out of Stock</span>
-    } @else if (product.isFeatured) {
-      <span class="badge badge-cyan">Featured</span>
-    }
+  <!-- Product Image Container with Overlaid Badges and Actions -->
+  <div class="product-image-wrapper">
+    <a [routerLink]="['/products', product.id]" class="product-img-link" [title]="product.name">
+      <img [src]="product.image" [alt]="product.name" loading="lazy" class="product-img" />
+    </a>
+
+    <!-- Overlay Badges -->
+    <div class="card-badges">
+      <span class="badge badge-brand">{{ product.brand }}</span>
+      @if (!product.inStock) {
+        <span class="badge badge-danger">Out of Stock</span>
+      } @else if (product.isFeatured) {
+        <span class="badge badge-cyan">Featured</span>
+      }
+    </div>
+
+    <!-- Favourite Action Button -->
+    <button
+      type="button"
+      class="fav-toggle-btn"
+      [class.is-fav]="favService.isFavourite(product.id)"
+      (click)="toggleFav($event)"
+      [title]="favService.isFavourite(product.id) ? 'Remove from favourites' : 'Save to favourites'"
+      aria-label="Toggle favourite">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+      </svg>
+    </button>
   </div>
-
-  <!-- Favourite Action Button -->
-  <button
-    class="fav-toggle-btn"
-    [class.is-fav]="favService.isFavourite(product.id)"
-    (click)="toggleFav($event)"
-    [title]="favService.isFavourite(product.id) ? 'Remove from favourites' : 'Save to favourites'"
-    aria-label="Toggle favourite">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-    </svg>
-  </button>
-
-  <!-- Product Image Container -->
-  <a [routerLink]="['/products', product.id]" class="product-image-wrapper">
-    <img [src]="product.image" [alt]="product.name" loading="lazy" class="product-img" />
-  </a>
 
   <!-- Product Details -->
   <div class="product-body">

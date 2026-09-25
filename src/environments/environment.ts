@@ -10,8 +10,8 @@ export const environment = {
     // Replace these with your actual EmailJS credentials or configure them in the Admin Settings panel
     publicKey: 'J7n3H1W9g5lTOz_yn',
     serviceId: 'service_4blnuwl',
-    otpTemplateId: 'template_vxrdjum',
     orderTemplateId: 'template_tr8bpct',
+    serviceBookingTemplateId: 'template_service_booking',
     notificationEmail: 'bhuvaneshwaranaj@gmail.com'
   },
   otpExpirySeconds: 60,

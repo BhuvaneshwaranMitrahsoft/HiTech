@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { DataService } from '../../core/services/data.service';
 import { ToastService } from '../../core/services/toast.service';
-import { EmailService } from '../../core/services/email.service';
+import { CatalogPublishService } from '../../core/services/catalog-publish.service';
 import { ShopOwner, ShopRegistrationForm } from '../../core/models/shop-owner.model';
 
 @Component({
@@ -17,7 +17,7 @@ import { ShopOwner, ShopRegistrationForm } from '../../core/models/shop-owner.mo
 export class ShopRegistrationComponent {
   dataService = inject(DataService);
   toastService = inject(ToastService);
-  emailService = inject(EmailService);
+  publishService = inject(CatalogPublishService);
   private router = inject(Router);
 
   isSubmitting = false;
@@ -83,8 +83,17 @@ export class ShopRegistrationComponent {
       const newOwner = this.dataService.registerNewShopOwner(this.form);
       this.registeredShop = newOwner;
 
-      // Dispatch applicant acknowledgement and admin notification emails
-      await this.emailService.sendShopRegistrationEmails(this.form, newOwner);
+      // If GitHub integration is configured, sync the updated shop-owners file immediately
+      if (this.publishService.isConfigured()) {
+        try {
+          const ownersJson = JSON.stringify(this.dataService.shopOwners(), null, 2);
+          await this.publishService.publishFiles([
+            { path: 'public/data/shop-owners.json', content: ownersJson }
+          ], `feat(shop): new wholesale partner registration - ${newOwner.shopName}`);
+        } catch (syncErr) {
+          console.warn('Background GitHub sync skipped or failed:', syncErr);
+        }
+      }
 
       this.isRegistered = true;
       this.toastService.show('Application submitted! Your wholesale partner request is pending admin verification.', 'success', 'Application Received');
