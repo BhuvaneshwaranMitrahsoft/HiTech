@@ -5,6 +5,7 @@ import { CartService } from './cart.service';
 import { EmailService } from './email.service';
 import { AuthService } from './auth.service';
 import { CatalogPublishService } from './catalog-publish.service';
+import { LoggerService } from './logger.service';
 
 const ORDERS_STORAGE_KEY = 'hitech_customer_orders';
 const BOOKINGS_STORAGE_KEY = 'hitech_service_bookings';
@@ -17,6 +18,7 @@ export class OrderService {
   private emailService = inject(EmailService);
   private authService = inject(AuthService);
   private publishService = inject(CatalogPublishService);
+  private logger = inject(LoggerService);
 
   private _orders = signal<Order[]>(this.loadOrders());
   private _bookings = signal<ServiceBookingRequest[]>(this.loadBookings());
@@ -77,6 +79,7 @@ export class OrderService {
 
     const orderId = 'HT-' + Date.now().toString().slice(-6);
     const orderNumber = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+    const nowStr = new Date().toLocaleString();
 
     const newOrder: Order = {
       id: orderId,
@@ -91,7 +94,16 @@ export class OrderService {
       shopOwnerId: session?.shopOwnerId,
       shopName: session?.shopName,
       status: 'Order Placed',
-      createdAt: new Date().toLocaleString(),
+      createdAt: nowStr,
+      updatedAt: nowStr,
+      statusHistory: [
+        {
+          status: 'Order Placed',
+          timestamp: nowStr,
+          note: `Order placed by ${isOwner ? 'shop owner (' + (session?.shopName || 'Wholesale') + ')' : customer.name}`,
+          updatedBy: isOwner ? 'Shop Owner' : 'Customer'
+        }
+      ],
       ownerNotifiedViaEmail: false
     };
 
@@ -109,10 +121,16 @@ export class OrderService {
     this._lastPlacedOrder.set(newOrder);
     this.cartService.clearCart();
 
+    this.logger.info('OrderService', `Order #${newOrder.orderNumber} placed (₹${newOrder.totalAmount})`, {
+      orderId: newOrder.id,
+      customer: newOrder.customer.name,
+      itemsCount: newOrder.items.length
+    });
+
     // Trigger immediate pipeline push if configured
     if (this.publishService.isConfigured()) {
       this.publishService.triggerImmediatePipeline(`Customer Order #${newOrder.orderNumber} placed`)
-        .catch(err => console.warn('Pipeline dispatch skipped:', err));
+        .catch(err => this.logger.warn('OrderService', 'Pipeline dispatch skipped: ' + err?.message));
     }
 
     return { success: true, order: newOrder };
@@ -141,11 +159,21 @@ export class OrderService {
       return { success: false, message: 'Name, Phone number, and Address are required for service booking.' };
     }
 
+    const nowStr = new Date().toLocaleString();
     const booking: ServiceBookingRequest = {
       id: 'SRV-' + Math.floor(100000 + Math.random() * 900000),
       ...bookingData,
       status: 'Pending',
-      createdAt: new Date().toLocaleString()
+      createdAt: nowStr,
+      updatedAt: nowStr,
+      statusHistory: [
+        {
+          status: 'Pending',
+          timestamp: nowStr,
+          note: `Repair requested for ${bookingData.deviceModel} (${bookingData.serviceName})`,
+          updatedBy: 'Customer'
+        }
+      ]
     };
 
     // Send email notification to owner
@@ -159,29 +187,71 @@ export class OrderService {
 
     this._lastPlacedBooking.set(booking);
 
+    this.logger.info('OrderService', `Repair Booking #${booking.id} created: ${booking.serviceName}`, {
+      bookingId: booking.id,
+      customer: booking.customerName,
+      device: booking.deviceModel
+    });
+
     // Trigger immediate pipeline push if configured
     if (this.publishService.isConfigured()) {
       this.publishService.triggerImmediatePipeline(`Repair Booking #${booking.id} (${booking.serviceName})`)
-        .catch(err => console.warn('Pipeline dispatch skipped:', err));
+        .catch(err => this.logger.warn('OrderService', 'Pipeline dispatch skipped: ' + err?.message));
     }
 
     return { success: true, booking };
   }
 
-  updateOrderStatus(orderId: string, status: Order['status']): void {
+  updateOrderStatus(orderId: string, status: Order['status'], note?: string, updatedBy: string = 'Admin'): void {
+    const timestamp = new Date().toLocaleString();
     this._orders.update(list => {
-      const updated = list.map(ord => ord.id === orderId ? { ...ord, status } : ord);
+      const updated = list.map(ord => {
+        if (ord.id === orderId) {
+          const currentHistory = ord.statusHistory || [
+            { status: ord.status, timestamp: ord.createdAt, note: 'Initial placement' }
+          ];
+          return {
+            ...ord,
+            status,
+            updatedAt: timestamp,
+            statusHistory: [
+              ...currentHistory,
+              { status, timestamp, note: note || `Status updated to ${status}`, updatedBy }
+            ]
+          };
+        }
+        return ord;
+      });
       localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
+    this.logger.info('OrderService', `Order #${orderId} status updated to '${status}'`, { orderId, status, updatedBy });
   }
 
-  updateBookingStatus(bookingId: string, status: ServiceBookingRequest['status']): void {
+  updateBookingStatus(bookingId: string, status: ServiceBookingRequest['status'], note?: string, updatedBy: string = 'Admin'): void {
+    const timestamp = new Date().toLocaleString();
     this._bookings.update(list => {
-      const updated = list.map(b => b.id === bookingId ? { ...b, status } : b);
+      const updated = list.map(b => {
+        if (b.id === bookingId) {
+          const currentHistory = b.statusHistory || [
+            { status: b.status, timestamp: b.createdAt, note: 'Initial booking' }
+          ];
+          return {
+            ...b,
+            status,
+            updatedAt: timestamp,
+            statusHistory: [
+              ...currentHistory,
+              { status, timestamp, note: note || `Status updated to ${status}`, updatedBy }
+            ]
+          };
+        }
+        return b;
+      });
       localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
+    this.logger.info('OrderService', `Repair Booking #${bookingId} status updated to '${status}'`, { bookingId, status, updatedBy });
   }
 
   exportOrdersJson(): void {

@@ -448,13 +448,30 @@
                       }
                     </td>
                     <td>
-                      <select [value]="ord.status" (change)="updateOrderStatus(ord, $event)" class="status-select">
-                        <option value="Order Placed">Order Placed</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="Dispatched">Dispatched</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
+                      <div class="status-cell">
+                        <select [value]="ord.status" (change)="updateOrderStatus(ord, $event)" class="status-select">
+                          <option value="Order Placed">Order Placed</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Dispatched">Dispatched</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <div class="status-meta" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem; flex-wrap: wrap;">
+                          <span class="badge" [ngClass]="{
+                            'badge-cyan': ord.status === 'Order Placed',
+                            'badge-purple': ord.status === 'Confirmed',
+                            'badge-warning': ord.status === 'Dispatched',
+                            'badge-success': ord.status === 'Delivered',
+                            'badge-danger': ord.status === 'Cancelled'
+                          }">{{ ord.status }}</span>
+                          <button type="button" class="btn-history-pill" (click)="viewOrderStatusHistory(ord)" title="View status tracking history">
+                            ⏱️ {{ ord.statusHistory?.length || 1 }} logs
+                          </button>
+                        </div>
+                        @if (ord.updatedAt && ord.updatedAt !== ord.createdAt) {
+                          <div class="tbl-sub" style="font-size: 0.72rem; margin-top: 0.2rem;">Updated: {{ ord.updatedAt }}</div>
+                        }
+                      </div>
                     </td>
                   </tr>
                 }
@@ -516,13 +533,30 @@
                       <div class="tbl-sub">{{ b.preferredTimeSlot }}</div>
                     </td>
                     <td>
-                      <select [value]="b.status" (change)="updateBookingStatus(b, $event)" class="status-select">
-                        <option value="Pending">Pending</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
+                      <div class="status-cell">
+                        <select [value]="b.status" (change)="updateBookingStatus(b, $event)" class="status-select">
+                          <option value="Pending">Pending</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <div class="status-meta" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem; flex-wrap: wrap;">
+                          <span class="badge" [ngClass]="{
+                            'badge-warning': b.status === 'Pending',
+                            'badge-cyan': b.status === 'Confirmed',
+                            'badge-purple': b.status === 'In Progress',
+                            'badge-success': b.status === 'Completed',
+                            'badge-danger': b.status === 'Cancelled'
+                          }">{{ b.status }}</span>
+                          <button type="button" class="btn-history-pill" (click)="viewBookingStatusHistory(b)" title="View status tracking history">
+                            ⏱️ {{ b.statusHistory?.length || 1 }} logs
+                          </button>
+                        </div>
+                        @if (b.updatedAt && b.updatedAt !== b.createdAt) {
+                          <div class="tbl-sub" style="font-size: 0.72rem; margin-top: 0.2rem;">Updated: {{ b.updatedAt }}</div>
+                        }
+                      </div>
                     </td>
                   </tr>
                 }
@@ -617,7 +651,7 @@
               Save GitHub Settings
             </button>
 
-            <button type="button" class="btn btn-primary" (click)="publishCatalogToGithub()" [disabled]="isPublishingGithub">
+            <button type="button" class="btn btn-primary" (click)="openPublishConfirmation('publish_catalog')" [disabled]="isPublishingGithub">
               @if (isPublishingGithub) {
                 🚀 Publishing Live & Triggering CI/CD...
               } @else {
@@ -625,7 +659,7 @@
               }
             </button>
 
-            <button type="button" class="btn btn-outline" (click)="triggerPipelineOnly()" [disabled]="isTriggeringPipeline">
+            <button type="button" class="btn btn-outline" (click)="openPublishConfirmation('trigger_pipeline')" [disabled]="isTriggeringPipeline">
               @if (isTriggeringPipeline) {
                 ⚡ Triggering Pipeline...
               } @else {
@@ -762,65 +796,71 @@
 
       <div class="settings-divider"></div>
 
-      <!-- 5. EMAILJS CONFIGURATION (ORDERS & BOOKINGS) -->
-      <h3 class="sub-heading">EmailJS API Keys (Order & Service Booking Notifications)</h3>
-      <p class="panel-desc">Configure EmailJS keys to send real-time alerts whenever a customer places an order or books a repair.</p>
+      <!-- 5. EMAIL NOTIFICATION TEMPLATES (ENVIRONMENT CONFIGURED) -->
+      <h3 class="sub-heading">Email Notifications & Standard Templates</h3>
+      <p class="panel-desc">
+        Email service configuration is strictly managed via environment configuration files (<code>environment.ts</code> & <code>environment.prod.ts</code>) to keep code secure and production-ready.
+      </p>
 
-      <form (ngSubmit)="saveEmailSettings()" class="email-settings-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label>EmailJS Public Key</label>
-            <input type="text" [(ngModel)]="emailSettings.publicKey" name="publicKey" class="form-control" placeholder="e.g. user_abcdef12345" />
+      <div class="quick-template-copy-box" style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.25rem; margin: 1.25rem 0;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <strong style="color: var(--text-white); font-size: 0.95rem;">Standard Clean EmailJS HTML Templates</strong>
+            <p style="margin: 0.25rem 0 0; font-size: 0.8rem; color: var(--text-muted);">
+              In EmailJS Dashboard &rarr; <em>Email Templates</em> &rarr; Click <em>Edit Content</em> &rarr; Choose <strong>Code Editor</strong> &rarr; Paste and Save.
+            </p>
           </div>
-
-          <div class="form-group">
-            <label>EmailJS Service ID</label>
-            <input type="text" [(ngModel)]="emailSettings.serviceId" name="serviceId" class="form-control" placeholder="e.g. service_gmail" />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Order Notification Template ID</label>
-            <input type="text" [(ngModel)]="emailSettings.orderTemplateId" name="orderTemplateId" class="form-control" placeholder="e.g. template_tr8bpct" />
-          </div>
-
-          <div class="form-group">
-            <label>Service Booking Template ID</label>
-            <input type="text" [(ngModel)]="emailSettings.serviceBookingTemplateId" name="serviceBookingTemplateId" class="form-control" placeholder="e.g. template_service_booking" />
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-sm btn-secondary" (click)="copyOrderTemplateHtml()">
+              📋 Copy Order Email Template HTML
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary" (click)="copyServiceTemplateHtml()">
+              📋 Copy Service Booking Template HTML
+            </button>
           </div>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label>Admin Notification Recipient Email</label>
-          <input type="email" [(ngModel)]="emailSettings.notificationEmail" name="notificationEmail" class="form-control" placeholder="bhuvaneshwaranaj@gmail.com" />
-        </div>
+      <div class="settings-divider"></div>
 
-        <!-- EMAILJS HTML TEMPLATES COPY BOX -->
-        <div class="quick-template-copy-box" style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.25rem; margin: 1.5rem 0;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div>
-              <strong style="color: var(--text-white); font-size: 0.95rem;">Standard Clean EmailJS HTML Templates</strong>
-              <p style="margin: 0.25rem 0 0; font-size: 0.8rem; color: var(--text-muted);">
-                In EmailJS Dashboard &rarr; <em>Email Templates</em> &rarr; Click <em>Edit Content</em> &rarr; Choose <strong>Code Editor</strong> &rarr; Paste and Save.
-              </p>
+      <!-- 6. PRODUCTION DIAGNOSTICS & SYSTEM LOGGING -->
+      <h3 class="sub-heading">Production Logging & Issue Tracking</h3>
+      <p class="panel-desc">
+        Centralized system logging tracks application operations, API requests, unhandled errors, and CI/CD events across the application.
+      </p>
+
+      <div class="settings-card glass-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+              <span style="font-size: 1.2rem;">📊</span>
+              <strong style="color: var(--text-primary); font-size: 1rem;">Application Activity Buffer</strong>
+              <span class="badge badge-cyan" style="font-size: 0.75rem;">{{ loggerService.logs().length }} entries recorded</span>
             </div>
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-              <button type="button" class="btn btn-sm btn-secondary" (click)="copyOrderTemplateHtml()">
-                📋 Copy Order Email Template HTML
-              </button>
-              <button type="button" class="btn btn-sm btn-secondary" (click)="copyServiceTemplateHtml()">
-                📋 Copy Service Booking Template HTML
-              </button>
-            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">
+              Rotates up to 200 recent structured events in persistent storage. Export logs to troubleshoot production errors.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="exportAppLogs()">
+              📥 Download Logs (.json)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" (click)="clearAppLogs()" [disabled]="loggerService.logs().length === 0">
+              🗑️ Clear Logs
+            </button>
           </div>
         </div>
+      </div>
 
-        <div class="settings-actions">
-          <button type="submit" class="btn btn-primary">Save Email Settings</button>
-          <button type="button" class="btn btn-danger" (click)="resetAllData()">Factory Reset All Catalogs</button>
-        </div>
-      </form>
+      <div class="settings-divider"></div>
+
+      <!-- 7. FACTORY RESET -->
+      <h3 class="sub-heading">Catalogs Factory Reset</h3>
+      <p class="panel-desc">Revert all local modifications back to initial bundled JSON files.</p>
+      <div style="margin-top: 1rem;">
+        <button type="button" class="btn btn-danger" (click)="resetAllData()">Factory Reset All Catalogs</button>
+      </div>
     </div>
   }
 
@@ -1082,6 +1122,159 @@
         <div class="modal-btn-row">
           <button class="btn btn-secondary" (click)="editingOwner = null">Cancel</button>
           <button class="btn btn-primary" (click)="saveOwnerCredentials()">Save Credentials</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: CI/CD PUBLISH CONFIRMATION -->
+  @if (showPublishModal) {
+    <div class="modal-backdrop animate-fade-in" (click)="closePublishConfirmation()">
+      <div class="modal-card modal-md glass-panel publish-confirm-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header-custom">
+          <div>
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span>⚠️</span>
+              {{ publishModalMode === 'publish_catalog' ? 'Confirm Live Catalog Publish' : 'Confirm CI/CD Pipeline Dispatch' }}
+            </h3>
+            <p class="modal-subtitle">
+              {{ publishModalMode === 'publish_catalog'
+                ? 'Review repository commit payload before triggering automated Render deployment'
+                : 'Confirm manual GitHub Actions workflow dispatch' }}
+            </p>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closePublishConfirmation()">&times;</button>
+        </div>
+
+        <div class="publish-confirm-body" style="margin-top: 1rem;">
+          <div class="target-repo-badge" style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+            <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Target Code Repository</div>
+            <div style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-top: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📂</span> {{ githubConfig.owner }}/{{ githubConfig.repo }}
+              <span class="badge badge-purple" style="font-size: 0.75rem;">branch: {{ githubConfig.branch }}</span>
+            </div>
+          </div>
+
+          @if (publishModalMode === 'publish_catalog') {
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+              The following static catalog files from your browser's modifications will be directly committed to the code repository:
+            </p>
+
+            <div class="files-preview-list" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+              @for (file of publishFilesSummary; track file.path) {
+                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 0.5rem 0.85rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 0.9rem;">📄</span>
+                    <span style="font-family: monospace; font-size: 0.85rem; color: var(--text-primary);">{{ file.path }}</span>
+                  </div>
+                  <span class="badge badge-cyan" style="font-size: 0.7rem;">{{ file.count }} records</span>
+                </div>
+              }
+            </div>
+
+            <div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; margin-bottom: 1.25rem;">
+              <strong style="color: #f59e0b; font-size: 0.85rem;">Deployment Flow:</strong>
+              <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0.25rem 0 0; line-height: 1.4;">
+                1. GitHub API commits files to <code>{{ githubConfig.branch }}</code>.<br>
+                2. GitHub Actions dispatches <code>admin-publish-immediate.yml</code>.<br>
+                3. Render builds and rolls out changes to the live production static site.
+              </p>
+            </div>
+          } @else {
+            <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; margin-bottom: 1.25rem;">
+              <strong style="color: #10b981; font-size: 0.85rem;">Pipeline Action:</strong>
+              <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0.25rem 0 0; line-height: 1.4;">
+                Dispatches workflow <code>admin-publish-immediate.yml</code> via GitHub Actions to re-run automated tests, build static artifacts, and deploy to Render without changing code files.
+              </p>
+            </div>
+          }
+        </div>
+
+        <div class="modal-btn-row" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" class="btn btn-secondary" (click)="closePublishConfirmation()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="confirmAndExecutePublish()">
+            {{ publishModalMode === 'publish_catalog' ? '🚀 Confirm & Publish to Code' : '⚡ Confirm & Trigger Pipeline' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: ORDER STATUS HISTORY -->
+  @if (selectedOrderForHistory) {
+    <div class="modal-backdrop animate-fade-in" (click)="closeOrderStatusHistory()">
+      <div class="modal-card modal-md glass-panel" (click)="$event.stopPropagation()">
+        <div class="modal-header-custom">
+          <div>
+            <h3 style="margin: 0;">Order #{{ selectedOrderForHistory.orderNumber }} Timeline</h3>
+            <p class="modal-subtitle">Customer: {{ selectedOrderForHistory.customer.name }} (Placed: {{ selectedOrderForHistory.createdAt }})</p>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeOrderStatusHistory()">&times;</button>
+        </div>
+
+        <div class="timeline-container" style="margin-top: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+          @for (step of selectedOrderForHistory.statusHistory || []; track step.timestamp) {
+            <div class="timeline-item" style="display: flex; gap: 0.85rem; align-items: flex-start;">
+              <div class="timeline-dot" style="width: 12px; height: 12px; border-radius: 50%; background: var(--primary-500); margin-top: 0.3rem; flex-shrink: 0; box-shadow: 0 0 8px var(--primary-500);"></div>
+              <div class="timeline-content" style="flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 0.75rem 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem;">
+                  <strong style="color: var(--text-primary); font-size: 0.95rem;">{{ step.status }}</strong>
+                  <span class="tbl-sub" style="font-size: 0.78rem;">{{ step.timestamp }}</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ step.note }}</div>
+                @if (step.updatedBy) {
+                  <div class="tbl-sub" style="font-size: 0.72rem; margin-top: 0.25rem;">Actor: {{ step.updatedBy }}</div>
+                }
+              </div>
+            </div>
+          }
+          @if (!selectedOrderForHistory.statusHistory || selectedOrderForHistory.statusHistory.length === 0) {
+            <p class="tbl-sub">Initial order created at {{ selectedOrderForHistory.createdAt }} (Status: {{ selectedOrderForHistory.status }})</p>
+          }
+        </div>
+
+        <div class="modal-btn-row" style="margin-top: 1.5rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" (click)="closeOrderStatusHistory()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: SERVICE BOOKING STATUS HISTORY -->
+  @if (selectedBookingForHistory) {
+    <div class="modal-backdrop animate-fade-in" (click)="closeBookingStatusHistory()">
+      <div class="modal-card modal-md glass-panel" (click)="$event.stopPropagation()">
+        <div class="modal-header-custom">
+          <div>
+            <h3 style="margin: 0;">Booking #{{ selectedBookingForHistory.id }} Timeline</h3>
+            <p class="modal-subtitle">{{ selectedBookingForHistory.serviceName }} for {{ selectedBookingForHistory.customerName }} ({{ selectedBookingForHistory.deviceModel }})</p>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeBookingStatusHistory()">&times;</button>
+        </div>
+
+        <div class="timeline-container" style="margin-top: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+          @for (step of selectedBookingForHistory.statusHistory || []; track step.timestamp) {
+            <div class="timeline-item" style="display: flex; gap: 0.85rem; align-items: flex-start;">
+              <div class="timeline-dot" style="width: 12px; height: 12px; border-radius: 50%; background: #06b6d4; margin-top: 0.3rem; flex-shrink: 0; box-shadow: 0 0 8px #06b6d4;"></div>
+              <div class="timeline-content" style="flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 0.75rem 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem;">
+                  <strong style="color: var(--text-primary); font-size: 0.95rem;">{{ step.status }}</strong>
+                  <span class="tbl-sub" style="font-size: 0.78rem;">{{ step.timestamp }}</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ step.note }}</div>
+                @if (step.updatedBy) {
+                  <div class="tbl-sub" style="font-size: 0.72rem; margin-top: 0.25rem;">Actor: {{ step.updatedBy }}</div>
+                }
+              </div>
+            </div>
+          }
+          @if (!selectedBookingForHistory.statusHistory || selectedBookingForHistory.statusHistory.length === 0) {
+            <p class="tbl-sub">Initial booking requested at {{ selectedBookingForHistory.createdAt }} (Status: {{ selectedBookingForHistory.status }})</p>
+          }
+        </div>
+
+        <div class="modal-btn-row" style="margin-top: 1.5rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" (click)="closeBookingStatusHistory()">Close</button>
         </div>
       </div>
     </div>

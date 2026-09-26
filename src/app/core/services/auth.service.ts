@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthSession, OtpState, UserRole } from '../models/auth.model';
 import { DataService } from './data.service';
+import { LoggerService } from './logger.service';
 
 const SESSION_STORAGE_KEY = 'hitech_active_session';
 const OTP_PENDING_KEY = 'hitech_pending_otp';
@@ -13,6 +14,7 @@ const OTP_PENDING_KEY = 'hitech_pending_otp';
 export class AuthService {
   private router = inject(Router);
   private dataService = inject(DataService);
+  private logger = inject(LoggerService);
 
   private _session = signal<AuthSession | null>(this.loadInitialSession());
   private _otpState = signal<OtpState | null>(this.loadPendingOtp());
@@ -83,6 +85,7 @@ export class AuthService {
       };
       this._session.set(session);
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+      this.logger.info('AuthService', 'Administrator logged in successfully: ' + cleanEmail);
       return { success: true, message: 'Welcome back, Administrator!', role: 'admin', session };
     }
 
@@ -92,6 +95,7 @@ export class AuthService {
 
     if (matchedOwner) {
       if (matchedOwner.status !== 'active') {
+        this.logger.warn('AuthService', 'Inactive shop owner login attempt: ' + cleanEmail);
         return { success: false, message: 'Your shop partner account is currently pending or suspended. Please contact Admin.' };
       }
 
@@ -113,10 +117,12 @@ export class AuthService {
         };
         this._session.set(session);
         sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+        this.logger.info('AuthService', `Shop Owner logged in: ${cleanEmail} (${matchedOwner.shopName})`);
         return { success: true, message: `Welcome, ${matchedOwner.shopName}!`, role: 'shopowner', session };
       }
     }
 
+    this.logger.warn('AuthService', 'Failed login attempt for: ' + cleanEmail);
     return { success: false, message: 'Invalid email or password. Please check your credentials.' };
   }
 
@@ -254,6 +260,8 @@ export class AuthService {
   }
 
   logout(): void {
+    const session = this._session();
+    this.logger.info('AuthService', `User logged out: ${session?.email || 'anonymous'}`);
     this._session.set(null);
     this.clearOtpState();
     sessionStorage.removeItem(SESSION_STORAGE_KEY);

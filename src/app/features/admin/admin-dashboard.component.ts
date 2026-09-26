@@ -9,6 +9,7 @@ import { ToastService } from '../../core/services/toast.service';
 import { EmailService } from '../../core/services/email.service';
 import { CatalogPublishService, GithubPublishConfig } from '../../core/services/catalog-publish.service';
 import { DistanceService, HubConfig } from '../../core/services/distance.service';
+import { LoggerService } from '../../core/services/logger.service';
 import { ProductItem, ProductSpecs } from '../../core/models/product.model';
 import { ServiceBookingItem, ServiceBookingRequest } from '../../core/models/service.model';
 import { ShopOwner } from '../../core/models/shop-owner.model';
@@ -30,6 +31,7 @@ export class AdminDashboardComponent implements OnInit {
   emailService = inject(EmailService);
   publishService = inject(CatalogPublishService);
   distanceService = inject(DistanceService);
+  loggerService = inject(LoggerService);
 
   activeTab: 'products' | 'pricing' | 'owners' | 'orders' | 'settings' = 'products';
   pricingCategoryTab: 'phones' | 'accessories' | 'services' = 'phones';
@@ -103,14 +105,14 @@ export class AdminDashboardComponent implements OnInit {
   lastBackupYear: number | null = null;
   isArchivingOrders: boolean = false;
 
-  // EmailJS Settings form (Order & Repair Booking Notifications)
-  emailSettings = {
-    publicKey: '',
-    serviceId: '',
-    orderTemplateId: '',
-    serviceBookingTemplateId: '',
-    notificationEmail: ''
-  };
+  // CI/CD Publish Confirmation Modal State
+  showPublishModal: boolean = false;
+  publishModalMode: 'publish_catalog' | 'trigger_pipeline' = 'publish_catalog';
+  publishFilesSummary: { name: string; path: string; count: number }[] = [];
+
+  // Order & Booking Status History Modal State
+  selectedOrderForHistory: Order | null = null;
+  selectedBookingForHistory: ServiceBookingRequest | null = null;
 
   readonly phoneSubCategories = ['Smartphones', 'Flagship Phones', 'Budget Phones', 'Gaming Phones'];
   readonly accessorySubCategories = [
@@ -128,8 +130,6 @@ export class AdminDashboardComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    const cfg = this.emailService.getCustomConfig();
-    this.emailSettings = { ...cfg };
     this.githubConfig = this.publishService.getConfig();
     this.hubSettings = this.distanceService.getHubConfig();
     this.lastBackupYear = this.orderService.getLastBackupYear();
@@ -477,6 +477,50 @@ export class AdminDashboardComponent implements OnInit {
     this.toastService.show('GitHub configuration saved to this browser!', 'success');
   }
 
+  openPublishConfirmation(mode: 'publish_catalog' | 'trigger_pipeline'): void {
+    if (!this.publishService.isConfigured()) {
+      this.toastService.show('Please provide a GitHub Personal Access Token (PAT) before publishing.', 'warning');
+      return;
+    }
+    this.publishModalMode = mode;
+    this.publishFilesSummary = [
+      { name: 'Products Catalog', path: 'public/data/products.json', count: this.dataService.products().length },
+      { name: 'Accessories Catalog', path: 'public/data/accessories.json', count: this.dataService.accessories().length },
+      { name: 'Repair Services', path: 'public/data/services.json', count: this.dataService.services().length },
+      { name: 'Shop Owners Registry', path: 'public/data/shop-owners.json', count: this.dataService.shopOwners().length }
+    ];
+    this.showPublishModal = true;
+  }
+
+  closePublishConfirmation(): void {
+    this.showPublishModal = false;
+  }
+
+  async confirmAndExecutePublish(): Promise<void> {
+    this.showPublishModal = false;
+    if (this.publishModalMode === 'publish_catalog') {
+      await this.publishCatalogToGithub();
+    } else {
+      await this.triggerPipelineOnly();
+    }
+  }
+
+  viewOrderStatusHistory(order: Order): void {
+    this.selectedOrderForHistory = order;
+  }
+
+  closeOrderStatusHistory(): void {
+    this.selectedOrderForHistory = null;
+  }
+
+  viewBookingStatusHistory(booking: ServiceBookingRequest): void {
+    this.selectedBookingForHistory = booking;
+  }
+
+  closeBookingStatusHistory(): void {
+    this.selectedBookingForHistory = null;
+  }
+
   async publishCatalogToGithub(): Promise<void> {
     if (!this.publishService.isConfigured()) {
       this.toastService.show('Please provide a GitHub Personal Access Token (PAT) before publishing.', 'warning');
@@ -611,9 +655,16 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  saveEmailSettings(): void {
-    this.emailService.saveCustomConfig(this.emailSettings);
-    this.toastService.show('EmailJS configuration updated!', 'success');
+  exportAppLogs(): void {
+    this.loggerService.exportLogsJson();
+    this.toastService.show('Production error & activity logs downloaded', 'success');
+  }
+
+  clearAppLogs(): void {
+    if (confirm('Clear all stored application logs from this browser?')) {
+      this.loggerService.clearLogs();
+      this.toastService.show('Application logs cleared', 'info');
+    }
   }
 
   copyOrderTemplateHtml(): void {

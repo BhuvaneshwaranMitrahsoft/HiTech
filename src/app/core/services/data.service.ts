@@ -4,6 +4,7 @@ import { ProductItem } from '../models/product.model';
 import { ServiceBookingItem } from '../models/service.model';
 import { ShopOwner, ShopRegistrationForm } from '../models/shop-owner.model';
 import { parseDiscountPercent } from '../utils/wholesale.util';
+import { LoggerService } from './logger.service';
 
 const STORAGE_KEYS = {
   PRODUCTS: 'hitech_custom_products',
@@ -17,6 +18,7 @@ const STORAGE_KEYS = {
 })
 export class DataService {
   private http = inject(HttpClient);
+  private logger = inject(LoggerService);
 
   // Reactive state signals
   private _products = signal<ProductItem[]>([]);
@@ -57,7 +59,7 @@ export class DataService {
       } else {
         this.http.get<ProductItem[]>('data/products.json').subscribe({
           next: (data) => this._products.set(data),
-          error: (err) => console.error('Failed to load products.json', err)
+          error: (err) => this.logger.error('DataService', 'Failed to load products.json', err)
         });
       }
 
@@ -68,7 +70,7 @@ export class DataService {
       } else {
         this.http.get<ProductItem[]>('data/accessories.json').subscribe({
           next: (data) => this._accessories.set(data),
-          error: (err) => console.error('Failed to load accessories.json', err)
+          error: (err) => this.logger.error('DataService', 'Failed to load accessories.json', err)
         });
       }
 
@@ -79,7 +81,7 @@ export class DataService {
       } else {
         this.http.get<ServiceBookingItem[]>('data/services.json').subscribe({
           next: (data) => this._services.set(data),
-          error: (err) => console.error('Failed to load services.json', err)
+          error: (err) => this.logger.error('DataService', 'Failed to load services.json', err)
         });
       }
 
@@ -90,13 +92,14 @@ export class DataService {
       } else {
         this.http.get<ShopOwner[]>('data/shop-owners.json').subscribe({
           next: (data) => this._shopOwners.set(data),
-          error: (err) => console.error('Failed to load shop-owners.json', err)
+          error: (err) => this.logger.error('DataService', 'Failed to load shop-owners.json', err)
         });
       }
 
       this._isLoaded.set(true);
+      this.logger.info('DataService', 'Catalogs initialized successfully');
     } catch (e) {
-      console.error('Error in initData', e);
+      this.logger.error('DataService', 'Error during initData', e);
       this._isLoaded.set(true);
     }
   }

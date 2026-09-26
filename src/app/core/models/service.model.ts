@@ -14,6 +14,13 @@ export interface ServiceBookingItem {
 
 export type ServiceFulfillmentMode = 'home_pickup' | 'parcel' | 'store_handover';
 
+export interface ServiceStatusHistoryItem {
+  status: ServiceBookingRequest['status'];
+  timestamp: string;
+  note?: string;
+  updatedBy?: string;
+}
+
 export interface ServiceBookingRequest {
   id: string;
   serviceId: string;
@@ -32,4 +39,6 @@ export interface ServiceBookingRequest {
   estimatedPrice: number;
   status: 'Pending' | 'Confirmed' | 'In Progress' | 'Completed' | 'Cancelled';
   createdAt: string;
+  updatedAt?: string;
+  statusHistory?: ServiceStatusHistoryItem[];
 }

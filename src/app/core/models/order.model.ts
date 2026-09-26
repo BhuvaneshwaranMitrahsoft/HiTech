@@ -19,6 +19,13 @@ export interface OrderItemRecord {
   image: string;
 }
 
+export interface OrderStatusHistoryItem {
+  status: Order['status'];
+  timestamp: string;
+  note?: string;
+  updatedBy?: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
@@ -33,5 +40,7 @@ export interface Order {
   shopName?: string;
   status: 'Order Placed' | 'Confirmed' | 'Dispatched' | 'Delivered' | 'Cancelled';
   createdAt: string;
+  updatedAt?: string;
+  statusHistory?: OrderStatusHistoryItem[];
   ownerNotifiedViaEmail: boolean;
 }

@@ -1,8 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import emailjs from '@emailjs/browser';
 import { environment } from '../../../environments/environment';
 import { Order } from '../models/order.model';
 import { ServiceBookingRequest } from '../models/service.model';
+import { LoggerService } from './logger.service';
 
 export interface EmailLogEntry {
   id: string;
@@ -14,32 +15,22 @@ export interface EmailLogEntry {
   status: 'SENT_VIA_EMAILJS' | 'SIMULATED_LOCAL';
 }
 
-const EMAIL_CONFIG_KEY = 'hitech_emailjs_custom_config';
 const EMAIL_LOGS_KEY = 'hitech_email_logs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmailService {
+  private logger = inject(LoggerService);
   private _logs = signal<EmailLogEntry[]>(this.loadLogs());
   readonly logs = this._logs.asReadonly();
 
+  /**
+   * Always reads configuration directly from environment.emailJs
+   * (Admin UI does not manage API credentials; configured in code)
+   */
   private getConfig() {
-    try {
-      const saved = localStorage.getItem(EMAIL_CONFIG_KEY);
-      if (saved) {
-        return { ...environment.emailJs, ...JSON.parse(saved) };
-      }
-    } catch {}
     return environment.emailJs;
-  }
-
-  saveCustomConfig(config: Partial<typeof environment.emailJs>): void {
-    localStorage.setItem(EMAIL_CONFIG_KEY, JSON.stringify(config));
-  }
-
-  getCustomConfig(): typeof environment.emailJs {
-    return this.getConfig();
   }
 
   private loadLogs(): EmailLogEntry[] {
@@ -91,7 +82,7 @@ export class EmailService {
       order_date: new Date().toLocaleString()
     };
 
-    const isConfigured = config.publicKey && config.publicKey !== 'YOUR_EMAILJS_PUBLIC_KEY';
+    const isConfigured = !!config.publicKey && config.publicKey !== 'YOUR_EMAILJS_PUBLIC_KEY';
 
     if (isConfigured) {
       try {
@@ -108,10 +99,13 @@ export class EmailService {
           payload: templateParams,
           status: 'SENT_VIA_EMAILJS'
         });
+        this.logger.info('EmailService', `Order notification sent via EmailJS to ${ownerEmail} for order #${order.orderNumber}`);
         return { success: true, simulated: false };
-      } catch (err) {
-        console.warn('EmailJS error on order notification, falling back to simulated:', err);
+      } catch (err: any) {
+        this.logger.warn('EmailService', `EmailJS dispatch failed for order #${order.orderNumber}: ${err?.text || err?.message || err}. Falling back to simulation.`, err);
       }
+    } else {
+      this.logger.info('EmailService', 'EmailJS public key not set in environment. Simulating order email dispatch.');
     }
 
     this.addLog({
@@ -149,7 +143,7 @@ export class EmailService {
       booking_date: new Date().toLocaleDateString('en-IN')
     };
 
-    const isConfigured = config.publicKey && config.publicKey !== 'YOUR_EMAILJS_PUBLIC_KEY';
+    const isConfigured = !!config.publicKey && config.publicKey !== 'YOUR_EMAILJS_PUBLIC_KEY';
 
     if (isConfigured) {
       try {
@@ -167,10 +161,13 @@ export class EmailService {
           payload: templateParams,
           status: 'SENT_VIA_EMAILJS'
         });
+        this.logger.info('EmailService', `Service booking email sent via EmailJS to ${ownerEmail} for booking #${booking.id}`);
         return { success: true, simulated: false };
-      } catch (e) {
-        console.warn('EmailJS service booking error:', e);
+      } catch (err: any) {
+        this.logger.warn('EmailService', `EmailJS dispatch failed for booking #${booking.id}: ${err?.text || err?.message || err}. Falling back to simulation.`, err);
       }
+    } else {
+      this.logger.info('EmailService', 'EmailJS public key not configured in environment. Simulating service booking email dispatch.');
     }
 
     this.addLog({

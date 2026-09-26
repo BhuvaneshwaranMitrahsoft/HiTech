@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { LoggerService } from './logger.service';
 
 const GITHUB_CONFIG_KEY = 'hitech_github_publish_config';
 
@@ -22,6 +23,7 @@ export interface PublishFile {
 })
 export class CatalogPublishService {
   private http = inject(HttpClient);
+  private logger = inject(LoggerService);
 
   getConfig(): GithubPublishConfig {
     const defaults: GithubPublishConfig = {
@@ -42,6 +44,7 @@ export class CatalogPublishService {
   saveConfig(config: Partial<GithubPublishConfig>): void {
     const merged = { ...this.getConfig(), ...config };
     localStorage.setItem(GITHUB_CONFIG_KEY, JSON.stringify(merged));
+    this.logger.info('CatalogPublishService', `GitHub publish config updated for ${merged.owner}/${merged.repo} (${merged.branch})`);
   }
 
   isConfigured(): boolean {
@@ -56,10 +59,9 @@ export class CatalogPublishService {
   async publishFiles(files: PublishFile[], commitMessage: string): Promise<{ success: boolean; message: string }> {
     const cfg = this.getConfig();
     if (!this.isConfigured()) {
-      return {
-        success: false,
-        message: 'GitHub token is not set. Download or email JSON instead, then commit the files.'
-      };
+      const err = 'GitHub token is not set. Download or email JSON instead, then commit the files.';
+      this.logger.warn('CatalogPublishService', err);
+      return { success: false, message: err };
     }
 
     const headers = new HttpHeaders({
@@ -69,6 +71,8 @@ export class CatalogPublishService {
     });
 
     try {
+      this.logger.info('CatalogPublishService', `Starting GitHub publish of ${files.length} files to ${cfg.owner}/${cfg.repo}@${cfg.branch}`);
+
       for (const file of files) {
         const apiUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${file.path}`;
         let sha: string | undefined;
@@ -89,14 +93,15 @@ export class CatalogPublishService {
             sha
           }, { headers })
         );
+        this.logger.info('CatalogPublishService', `Committed file: ${file.path} (sha: ${sha || 'new'})`);
       }
 
-      return {
-        success: true,
-        message: `Published ${files.length} catalog files to ${cfg.owner}/${cfg.repo} (${cfg.branch}).`
-      };
+      const successMsg = `Published ${files.length} catalog files to ${cfg.owner}/${cfg.repo} (${cfg.branch}).`;
+      this.logger.info('CatalogPublishService', successMsg);
+      return { success: true, message: successMsg };
     } catch (err: any) {
       const detail = err?.error?.message || err?.message || 'GitHub publish failed';
+      this.logger.error('CatalogPublishService', `GitHub publish failed: ${detail}`, err);
       return { success: false, message: detail };
     }
   }
@@ -107,10 +112,9 @@ export class CatalogPublishService {
   async triggerImmediatePipeline(reason: string = 'Admin changes publish', actorEmail?: string): Promise<{ success: boolean; message: string }> {
     const cfg = this.getConfig();
     if (!this.isConfigured()) {
-      return {
-        success: false,
-        message: 'GitHub token is not configured. Please save your GitHub PAT in settings.'
-      };
+      const err = 'GitHub token is not configured. Please save your GitHub PAT in settings.';
+      this.logger.warn('CatalogPublishService', err);
+      return { success: false, message: err };
     }
 
     const headers = new HttpHeaders({
@@ -122,6 +126,8 @@ export class CatalogPublishService {
     const workflowUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/actions/workflows/admin-publish-immediate.yml/dispatches`;
 
     try {
+      this.logger.info('CatalogPublishService', `Dispatching workflow admin-publish-immediate.yml on ${cfg.owner}/${cfg.repo} (${cfg.branch})`);
+
       await firstValueFrom(
         this.http.post(workflowUrl, {
           ref: cfg.branch,
@@ -132,12 +138,12 @@ export class CatalogPublishService {
         }, { headers })
       );
 
-      return {
-        success: true,
-        message: `CI/CD pipeline triggered successfully on ${cfg.owner}/${cfg.repo} (${cfg.branch})!`
-      };
+      const msg = `CI/CD pipeline triggered successfully on ${cfg.owner}/${cfg.repo} (${cfg.branch})!`;
+      this.logger.info('CatalogPublishService', msg);
+      return { success: true, message: msg };
     } catch (err: any) {
       const detail = err?.error?.message || err?.message || 'Failed to dispatch workflow';
+      this.logger.error('CatalogPublishService', `Pipeline trigger failed: ${detail}`, err);
       return { success: false, message: `Pipeline trigger failed: ${detail}` };
     }
   }

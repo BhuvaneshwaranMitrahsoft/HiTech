@@ -7,10 +7,10 @@ export const environment = {
     role: 'admin'
   },
   emailJs: {
-    // Replace these with your actual EmailJS credentials or configure them in the Admin Settings panel
+    // Standard EmailJS credentials for order & service booking notifications
     publicKey: 'J7n3H1W9g5lTOz_yn',
     serviceId: 'service_4blnuwl',
-    orderTemplateId: 'template_tr8bpct',
+    orderTemplateId: 'template_x4bv6v9',
     serviceBookingTemplateId: 'template_service_booking',
     notificationEmail: 'bhuvaneshwaranaj@gmail.com'
   },
