@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import emailjs from '@emailjs/browser';
 import { EmailService } from './email.service';
 import { Order } from '../models/order.model';
 import { ServiceBookingRequest } from '../models/service.model';
 
 describe('EmailService', () => {
   let service: EmailService;
+  let emailjsSendSpy: jasmine.Spy;
 
   beforeEach(() => {
     localStorage.clear();
@@ -12,10 +14,7 @@ describe('EmailService', () => {
       providers: [EmailService]
     });
     service = TestBed.inject(EmailService);
-    service.saveCustomConfig({
-      publicKey: 'YOUR_EMAILJS_PUBLIC_KEY',
-      serviceId: 'YOUR_EMAILJS_SERVICE_ID'
-    });
+    emailjsSendSpy = spyOn(emailjs, 'send').and.resolveTo({ status: 200, text: 'OK' } as any);
   });
 
   afterEach(() => {
@@ -26,15 +25,7 @@ describe('EmailService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get and save custom config', () => {
-    const customConfig = { serviceId: 'my_service', publicKey: 'my_key' };
-    service.saveCustomConfig(customConfig);
-    const config = service.getCustomConfig();
-    expect(config.serviceId).toBe('my_service');
-    expect(config.publicKey).toBe('my_key');
-  });
-
-  it('should send simulated order notification', async () => {
+  it('should send order notification via EmailJS', async () => {
     const mockOrder: Order = {
       id: 'ord-1',
       orderNumber: 'ORD-1234',
@@ -68,11 +59,15 @@ describe('EmailService', () => {
 
     const result = await service.sendOrderNotification(mockOrder);
     expect(result.success).toBeTrue();
-    expect(result.simulated).toBeTrue();
+    expect(result.simulated).toBeFalse();
+    expect(emailjsSendSpy).toHaveBeenCalled();
     expect(service.logs()[0].type).toBe('ORDER_NOTIFICATION');
+    expect(service.logs()[0].status).toBe('SENT_VIA_EMAILJS');
   });
 
-  it('should send simulated order notification for shop owner', async () => {
+  it('should fallback to simulation when EmailJS fails on order notification', async () => {
+    emailjsSendSpy.and.rejectWith(new Error('Network error'));
+
     const mockOrder: Order = {
       id: 'ord-shop-1',
       orderNumber: 'ORD-SHOP-1',
@@ -92,9 +87,10 @@ describe('EmailService', () => {
     const result = await service.sendOrderNotification(mockOrder);
     expect(result.success).toBeTrue();
     expect(result.simulated).toBeTrue();
+    expect(service.logs()[0].status).toBe('SIMULATED_LOCAL');
   });
 
-  it('should send simulated service booking notification', async () => {
+  it('should send service booking notification via EmailJS', async () => {
     const mockBooking: ServiceBookingRequest = {
       id: 'srv-book-1',
       serviceId: 'srv-1',
@@ -117,8 +113,36 @@ describe('EmailService', () => {
 
     const result = await service.sendServiceBookingNotification(mockBooking);
     expect(result.success).toBeTrue();
-    expect(result.simulated).toBeTrue();
+    expect(result.simulated).toBeFalse();
+    expect(emailjsSendSpy).toHaveBeenCalled();
     expect(service.logs()[0].type).toBe('SERVICE_BOOKING');
+    expect(service.logs()[0].status).toBe('SENT_VIA_EMAILJS');
+  });
+
+  it('should fallback to simulation when EmailJS fails on service booking', async () => {
+    emailjsSendSpy.and.rejectWith(new Error('Quota exceeded'));
+
+    const mockBooking: ServiceBookingRequest = {
+      id: 'srv-book-2',
+      serviceId: 'srv-2',
+      serviceName: 'Battery Replacement',
+      deviceModel: 'iPhone 13',
+      issueDescription: 'Battery drain',
+      customerName: 'Bob',
+      customerPhone: '9876543210',
+      customerAddress: '10 Main Road',
+      fulfillmentMode: 'store_handover',
+      preferredDate: '2026-04-02',
+      preferredTimeSlot: '02:00 PM',
+      estimatedPrice: 2500,
+      status: 'Pending',
+      createdAt: '2026-01-01'
+    };
+
+    const result = await service.sendServiceBookingNotification(mockBooking);
+    expect(result.success).toBeTrue();
+    expect(result.simulated).toBeTrue();
+    expect(service.logs()[0].status).toBe('SIMULATED_LOCAL');
   });
 
   it('should load pre-existing logs from localStorage', () => {
@@ -133,7 +157,11 @@ describe('EmailService', () => {
     }];
     localStorage.setItem('hitech_email_logs', JSON.stringify(preExisting));
 
-    const newService = new EmailService();
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [EmailService]
+    });
+    const newService = TestBed.inject(EmailService);
     expect(newService.logs().length).toBe(1);
     expect(newService.logs()[0].id).toBe('log-old');
   });
