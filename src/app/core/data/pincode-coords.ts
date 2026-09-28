@@ -29,6 +29,7 @@ export const PINCODE_COORDS: Record<string, GeoPoint> = {
   '641009': { lat: 11.0183, lng: 76.9725, label: 'Coimbatore Cross Cut' },
   '641012': { lat: 11.0169, lng: 76.9685, label: 'Gandhipuram' },
   '620001': { lat: 10.7905, lng: 78.7047, label: 'Trichy' },
+  '621315': { lat: 10.7905, lng: 78.7047, label: 'Maniyarampatti, Trichy' },
   '625001': { lat: 9.9252, lng: 78.1198, label: 'Madurai' },
   '627002': { lat: 8.7139, lng: 77.7567, label: 'Tirunelveli' },
   '560001': { lat: 12.9716, lng: 77.5946, label: 'Bengaluru' }

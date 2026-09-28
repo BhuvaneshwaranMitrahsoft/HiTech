@@ -395,3 +395,47 @@
   border-color: rgba(139, 92, 246, 0.3);
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 27, 75, 0.6) 100%);
 }
+
+/* Mobile App Experience Enhancements */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 3.5rem 0 2rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+
+    .btn {
+      width: 100%;
+    }
+  }
+
+  .wholesale-banner {
+    padding: 1.5rem 1.25rem;
+    border-radius: 16px;
+
+    .banner-title {
+      font-size: 1.6rem;
+    }
+
+    .banner-actions {
+      flex-direction: column;
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    .banner-visual .stat-highlight {
+      padding: 1.5rem 1rem;
+      width: 100%;
+    }
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+  }
+}
+

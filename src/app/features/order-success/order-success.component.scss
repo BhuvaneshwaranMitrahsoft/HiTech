@@ -143,3 +143,34 @@
   flex-wrap: wrap;
   justify-content: center;
 }
+
+@media (max-width: 600px) {
+  .success-card {
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+  }
+
+  .success-title {
+    font-size: 1.6rem;
+  }
+
+  .check-circle {
+    width: 64px;
+    height: 64px;
+  }
+
+  .receipt-box {
+    padding: 1.25rem 1rem;
+    border-radius: 12px;
+  }
+
+  .success-actions {
+    flex-direction: column;
+    width: 100%;
+
+    .btn {
+      width: 100%;
+    }
+  }
+}
+

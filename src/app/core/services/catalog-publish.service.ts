@@ -30,12 +30,18 @@ export class CatalogPublishService {
       owner: environment.github.owner,
       repo: environment.github.repo,
       branch: environment.github.branch,
-      token: ''
+      token: (environment.github as any).token || ''
     };
     try {
       const saved = localStorage.getItem(GITHUB_CONFIG_KEY);
       if (saved) {
-        return { ...defaults, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        return {
+          ...defaults,
+          ...parsed,
+          token: defaults.token || parsed.token || '',
+          branch: defaults.branch || parsed.branch || 'main'
+        };
       }
     } catch {}
     return defaults;

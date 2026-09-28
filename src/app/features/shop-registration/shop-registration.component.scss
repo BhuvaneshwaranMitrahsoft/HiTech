@@ -269,3 +269,23 @@
   justify-content: center;
   flex-wrap: wrap;
 }
+
+@media (max-width: 600px) {
+  .form-wrapper {
+    padding: 1.5rem 1rem;
+    border-radius: 14px;
+  }
+
+  .reg-header .reg-title {
+    font-size: 1.6rem;
+  }
+
+  .success-actions {
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+    }
+  }
+}
+

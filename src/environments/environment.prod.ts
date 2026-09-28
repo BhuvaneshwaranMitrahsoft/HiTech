@@ -16,15 +16,16 @@ export const environment = {
   },
   otpExpirySeconds: 60,
   hub: {
-    name: 'HiTech Service Center',
-    address: 'Anna Salai, Chennai, Tamil Nadu',
-    lat: 13.0827,
-    lng: 80.2707,
+    name: 'Hi Tech Mobile Sales and Service',
+    address: 'Maniyarampatti, Trichy, Tamil Nadu - 621315',
+    lat: 10.7905,
+    lng: 78.7047,
     pickupRadiusKm: 30
   },
   github: {
     owner: 'BhuvaneshwaranMitrahsoft',
     repo: 'HiTech',
-    branch: 'main'
+    branch: 'main',
+    token: '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'
   }
 };

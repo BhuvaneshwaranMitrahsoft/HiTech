@@ -308,3 +308,113 @@
     }
   }
 }
+
+/* Mobile App-Like Service Page */
+@media (max-width: 768px) {
+  .page-title-area {
+    margin-bottom: 1.5rem;
+    text-align: center;
+
+    .page-title {
+      font-size: 1.6rem;
+    }
+
+    .page-subtitle {
+      font-size: 0.88rem;
+    }
+  }
+
+  .cat-pill-center {
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding: 0 0.5rem 4px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill-btn {
+      white-space: nowrap;
+      flex-shrink: 0;
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      min-height: 40px;
+    }
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .modal-card {
+    padding: 1.5rem 1rem;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modal-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.85rem;
+
+    .modal-title {
+      font-size: 1.15rem;
+    }
+  }
+
+  .fulfillment-grid {
+    .fulfillment-card {
+      padding: 0.85rem;
+      border-radius: 12px;
+
+      .card-inner .f-header .f-title {
+        font-size: 0.88rem;
+      }
+
+      .card-inner .f-desc {
+        font-size: 0.78rem;
+      }
+    }
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .booking-success-box {
+    padding: 1.5rem 0.75rem;
+
+    h2 {
+      font-size: 1.35rem;
+    }
+
+    .appointment-summary {
+      padding: 1rem;
+      font-size: 0.82rem;
+    }
+  }
+
+  .distance-pill {
+    min-height: 40px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.78rem;
+  }
+
+  .input-with-action {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .gps-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

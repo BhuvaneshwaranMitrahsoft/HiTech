@@ -154,3 +154,104 @@
     font-size: 0.9rem;
   }
 }
+
+/* Mobile App-Like Owner Dashboard */
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 1.5rem 1rem;
+    margin-bottom: 2rem;
+    border-radius: 16px;
+  }
+
+  .partner-meta {
+    gap: 1rem;
+
+    .shop-avatar {
+      width: 72px;
+      height: 55px;
+      border-radius: 10px;
+    }
+
+    .shop-name {
+      font-size: 1.35rem;
+    }
+
+    .location-txt {
+      font-size: 0.82rem;
+    }
+  }
+
+  .partner-action-box {
+    width: 100%;
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .section-title-wrap {
+    margin-bottom: 1.25rem;
+
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+
+  .bulk-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .bulk-item-card {
+    padding: 0.85rem;
+    border-radius: 12px;
+
+    .thumb-box {
+      height: 100px;
+      margin-bottom: 0.65rem;
+    }
+
+    .bulk-body {
+      h4 {
+        font-size: 0.85rem;
+      }
+
+      .pricing-comparison {
+        margin-bottom: 0.65rem;
+
+        .retail-p {
+          font-size: 0.72rem;
+        }
+
+        .wholesale-p {
+          font-size: 0.85rem;
+        }
+      }
+
+      .add-bulk-btn {
+        font-size: 0.78rem;
+        min-height: 40px;
+        border-radius: 10px;
+      }
+    }
+  }
+
+  .orders-history-section {
+    padding: 1.25rem;
+    border-radius: 14px;
+
+    .orders-title {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .bulk-grid {
+    grid-template-columns: 1fr;
+  }
+}

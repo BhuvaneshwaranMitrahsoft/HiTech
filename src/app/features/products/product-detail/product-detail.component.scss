@@ -273,3 +273,48 @@
     }
   }
 }
+
+/* Mobile App Native Experience */
+@media (max-width: 768px) {
+  .media-col {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+
+    .main-image-wrap {
+      height: 240px;
+      margin-bottom: 1.25rem;
+      padding: 1rem;
+    }
+  }
+
+  .detail-title {
+    font-size: 1.6rem;
+  }
+
+  .specs-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-dock {
+    position: sticky;
+    bottom: 70px;
+    background: var(--bg-card);
+    padding: 0.75rem;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-medium);
+    z-index: 800;
+    margin-top: 1.5rem;
+
+    .qty-selector {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .add-btn, .buy-btn {
+      width: 100%;
+      min-width: unset;
+    }
+  }
+}
+

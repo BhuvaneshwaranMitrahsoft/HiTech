@@ -20,8 +20,8 @@
   max-width: 440px;
   width: calc(100% - 4rem);
 
-  @media (max-width: 640px) {
-    bottom: 1rem;
+  @media (max-width: 768px) {
+    bottom: 76px; /* Positioned above mobile sticky bottom navigation */
     right: 1rem;
     left: 1rem;
     width: auto;

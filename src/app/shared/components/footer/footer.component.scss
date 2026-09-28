@@ -202,3 +202,73 @@
 [data-theme="dark"] .footer-bottom {
   background: #030509;
 }
+
+/* Mobile App-Like Footer */
+@media (max-width: 768px) {
+  .site-footer {
+    margin-top: 2rem;
+    padding-top: 2.5rem;
+    /* Account for bottom navigation bar */
+    padding-bottom: 72px;
+  }
+
+  .footer-top {
+    gap: 1.75rem;
+    padding-bottom: 2rem;
+  }
+
+  .brand-col {
+    .brand-desc {
+      font-size: 0.82rem;
+      margin-bottom: 1rem;
+    }
+
+    .trust-pills {
+      .trust-pill {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+      }
+    }
+  }
+
+  .col-title {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  .footer-links {
+    gap: 0.6rem;
+
+    a {
+      font-size: 0.82rem;
+    }
+  }
+
+  .contact-item {
+    font-size: 0.82rem;
+    margin-bottom: 0.65rem;
+    gap: 0.6rem;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .contact-badge {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .footer-bottom {
+    padding: 1rem 0;
+
+    .bottom-content {
+      font-size: 0.75rem;
+    }
+
+    .bottom-tags {
+      font-size: 0.7rem;
+    }
+  }
+}
