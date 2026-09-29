@@ -106,6 +106,18 @@ describe('DataService', () => {
 
     const oReq = httpMock.match('data/shop-owners.json');
     oReq.forEach(req => req.flush(mockShopOwners));
+
+    const cReq = httpMock.match('data/competitor-prices.json');
+    cReq.forEach(req => req.flush({
+      'p-1': {
+        amazonPrice: 52000,
+        amazonUrl: 'https://amazon.in/dp/test',
+        flipkartPrice: 51500,
+        flipkartUrl: 'https://flipkart.com/test',
+        lastUpdated: '2026-09-29T00:00:00.000Z',
+        status: 'success'
+      }
+    }));
   });
 
   afterEach(() => {
@@ -205,10 +217,20 @@ describe('DataService', () => {
 
     await service.initData();
 
+    const cReq = httpMock.match('data/competitor-prices.json');
+    cReq.forEach(req => req.flush({}));
+
     expect(service.products()[0].id).toBe('stored-1');
     expect(service.accessories()[0].id).toBe('stored-2');
     expect(service.services()[0].id).toBe('stored-3');
     expect(service.shopOwners()[0].id).toBe('stored-4');
+  });
+
+  it('should retrieve competitor price for product', () => {
+    const comp = service.getCompetitorPrice('p-1');
+    expect(comp).toBeDefined();
+    expect(comp?.amazonPrice).toBe(52000);
+    expect(comp?.flipkartPrice).toBe(51500);
   });
 
   it('should reset all data', () => {

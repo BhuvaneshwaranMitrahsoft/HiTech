@@ -19,7 +19,12 @@
     },
     "inStock": true,
     "isFeatured": true,
-    "description": "Grade-5 titanium construction, A18 Pro silicon with Apple Intelligence, and dedicated Camera Control touch sensor."
+    "description": "Grade-5 titanium construction, A18 Pro silicon with Apple Intelligence, and dedicated Camera Control touch sensor.",
+    "competitorLinks": {
+      "amazonAsin": "B0DGJ9B8NW",
+      "amazonUrl": "https://www.amazon.in/dp/B0DGJ9B8NW",
+      "flipkartUrl": "https://www.flipkart.com/apple-iphone-16-pro-max-desert-titanium-256-gb/p/itmd04ca5187799e"
+    }
   },
   {
     "id": "prod-16",
@@ -41,7 +46,12 @@
     },
     "inStock": true,
     "isFeatured": false,
-    "description": "Featuring the A18 Bionic chip, Camera Control sensor, Action button, and color-infused durable back glass."
+    "description": "Featuring the A18 Bionic chip, Camera Control sensor, Action button, and color-infused durable back glass.",
+    "competitorLinks": {
+      "amazonAsin": "B0DGJ5J3H5",
+      "amazonUrl": "https://www.amazon.in/dp/B0DGJ5J3H5",
+      "flipkartUrl": "https://www.flipkart.com/apple-iphone-16-teal-128-gb/p/itm122a6ee583196"
+    }
   },
   {
     "id": "prod-1",
@@ -63,7 +73,12 @@
     },
     "inStock": true,
     "isFeatured": true,
-    "description": "Titanium design with A17 Pro chip, customizable Action button, and versatile pro camera system."
+    "description": "Titanium design with A17 Pro chip, customizable Action button, and versatile pro camera system.",
+    "competitorLinks": {
+      "amazonAsin": "B0CHX1W1XY",
+      "amazonUrl": "https://www.amazon.in/dp/B0CHX1W1XY",
+      "flipkartUrl": "https://www.flipkart.com/apple-iphone-15-pro-max-natural-titanium-256-gb/p/itmbf489626cc9a1"
+    }
   },
   {
     "id": "prod-15",
@@ -85,7 +100,12 @@
     },
     "inStock": true,
     "isFeatured": false,
-    "description": "Dynamic Island, 48MP main camera, durable color-infused glass back, and convenient universal USB-C."
+    "description": "Dynamic Island, 48MP main camera, durable color-infused glass back, and convenient universal USB-C.",
+    "competitorLinks": {
+      "amazonAsin": "B0CHX2F5QT",
+      "amazonUrl": "https://www.amazon.in/dp/B0CHX2F5QT",
+      "flipkartUrl": "https://www.flipkart.com/apple-iphone-15-blue-128-gb/p/itmbfb9ff3606f33"
+    }
   },
   {
     "id": "prod-14p",
@@ -239,7 +259,12 @@
     },
     "inStock": true,
     "isFeatured": true,
-    "description": "Groundbreaking Galaxy AI, flat titanium display with anti-reflective Gorilla Armor, and built-in S Pen."
+    "description": "Groundbreaking Galaxy AI, flat titanium display with anti-reflective Gorilla Armor, and built-in S Pen.",
+    "competitorLinks": {
+      "amazonAsin": "B0CS5X828H",
+      "amazonUrl": "https://www.amazon.in/dp/B0CS5X828H",
+      "flipkartUrl": "https://www.flipkart.com/samsung-galaxy-s24-ultra-5g-titanium-gray-512-gb/p/itm0a86d26732958"
+    }
   },
   {
     "id": "prod-s24",

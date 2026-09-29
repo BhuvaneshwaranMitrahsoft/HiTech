@@ -21,6 +21,25 @@
     </div>
   </div>
 
+  <!-- Live Market Price Match Info Strip -->
+  <div class="market-match-strip glass-panel">
+    <div class="strip-left">
+      <span class="pulse-indicator"></span>
+      <span class="strip-badge">Price Match Guarantee</span>
+      <span class="strip-text">All flagship prices are automatically verified daily at 1:00 AM against Amazon & Flipkart.</span>
+    </div>
+    @if (dealsCount > 0) {
+      <button
+        class="deals-filter-chip"
+        [class.active]="beatCompetitorOnly"
+        (click)="beatCompetitorOnly = !beatCompetitorOnly"
+        title="Filter products cheaper than Amazon & Flipkart">
+        <span class="chip-icon">🏷️</span>
+        <span>Beat Competitor Deals ({{ dealsCount }})</span>
+      </button>
+    }
+  </div>
+
   <!-- Filters & Sorting Bar -->
   <div class="filter-sort-bar glass-panel">
     <!-- Category Tabs -->

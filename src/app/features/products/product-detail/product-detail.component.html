@@ -66,6 +66,84 @@
           <div class="tax-note">Inclusive of all taxes & GST invoice</div>
         </div>
 
+        <!-- Live Market Price Comparison Widget (Scraped from Amazon & Flipkart) -->
+        @if (competitorPrice; as comp) {
+          <div class="competitor-comparison-box glass-panel">
+            <div class="comp-box-header">
+              <div class="comp-header-left">
+                <span class="live-dot"></span>
+                <span class="comp-heading">Live Market Price Match</span>
+              </div>
+              @if (comp.lastUpdated) {
+                <span class="comp-time" title="Automated verification timestamp">
+                  Sync: {{ comp.lastUpdated | date:'mediumDate' }}
+                </span>
+              }
+            </div>
+
+            <div class="comp-deal-cards">
+              <!-- Our Store -->
+              <div class="deal-card our-deal">
+                <div class="deal-store">
+                  <span class="store-badge our-badge">HiTech Store</span>
+                </div>
+                <div class="deal-price">₹{{ product.price | number }}</div>
+                <div class="deal-subtext best-deal">Our Direct Price</div>
+              </div>
+
+              <!-- Amazon -->
+              <div class="deal-card" [class.unavail]="!comp.amazonPrice">
+                <div class="deal-store">
+                  <span class="store-name">Amazon.in</span>
+                </div>
+                <div class="deal-price">
+                  {{ comp.amazonPrice ? '₹' + (comp.amazonPrice | number) : 'Checking...' }}
+                </div>
+                @if (comp.amazonPrice && product.price < comp.amazonPrice) {
+                  <div class="diff-tag cheaper">Save ₹{{ (comp.amazonPrice - product.price) | number }}</div>
+                } @else if (comp.amazonPrice && product.price === comp.amazonPrice) {
+                  <div class="diff-tag match">Price Matched</div>
+                } @else if (comp.amazonPrice) {
+                  <div class="diff-tag">Market Rate</div>
+                }
+                @if (comp.amazonUrl) {
+                  <a [href]="comp.amazonUrl" target="_blank" rel="noopener noreferrer" class="comp-verify-link">
+                    Verify ↗
+                  </a>
+                }
+              </div>
+
+              <!-- Flipkart -->
+              <div class="deal-card" [class.unavail]="!comp.flipkartPrice">
+                <div class="deal-store">
+                  <span class="store-name">Flipkart</span>
+                </div>
+                <div class="deal-price">
+                  {{ comp.flipkartPrice ? '₹' + (comp.flipkartPrice | number) : 'Checking...' }}
+                </div>
+                @if (comp.flipkartPrice && product.price < comp.flipkartPrice) {
+                  <div class="diff-tag cheaper">Save ₹{{ (comp.flipkartPrice - product.price) | number }}</div>
+                } @else if (comp.flipkartPrice && product.price === comp.flipkartPrice) {
+                  <div class="diff-tag match">Price Matched</div>
+                } @else if (comp.flipkartPrice) {
+                  <div class="diff-tag">Market Rate</div>
+                }
+                @if (comp.flipkartUrl) {
+                  <a [href]="comp.flipkartUrl" target="_blank" rel="noopener noreferrer" class="comp-verify-link">
+                    Verify ↗
+                  </a>
+                }
+              </div>
+            </div>
+
+            <!-- Transparency / Guarantee note -->
+            <div class="comp-guarantee-note">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Verified nightly at 1:00 AM • 100% Genuine with Manufacturer Warranty & Official GST Invoice</span>
+            </div>
+          </div>
+        }
+
         <p class="detail-description">{{ product.description }}</p>
 
         <!-- Hardware Specs Table if Phone -->

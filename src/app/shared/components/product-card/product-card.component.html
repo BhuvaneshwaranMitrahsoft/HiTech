@@ -59,12 +59,41 @@
       </p>
     }
 
+    <!-- Inline Competitor Comparison Bar -->
+    @if (competitorComparison; as comp) {
+      @if (comp.amazonPrice || comp.flipkartPrice) {
+        <div class="competitor-strip" (click)="$event.stopPropagation()" title="Live nightly market comparison">
+          <div class="comp-col">
+            <span class="comp-logo amazon">Amazon:</span>
+            <span class="comp-val">{{ comp.amazonPrice ? '₹' + (comp.amazonPrice | number) : '—' }}</span>
+          </div>
+          <div class="comp-divider"></div>
+          <div class="comp-col">
+            <span class="comp-logo flipkart">Flipkart:</span>
+            <span class="comp-val">{{ comp.flipkartPrice ? '₹' + (comp.flipkartPrice | number) : '—' }}</span>
+          </div>
+        </div>
+      }
+    }
+
     <!-- Pricing and Cart Action Footer -->
     <div class="product-footer">
       <div class="price-box">
         <div class="main-price">₹{{ product.price | number }}</div>
         @if (product.originalPrice && product.originalPrice > product.price) {
           <div class="original-price">₹{{ product.originalPrice | number }}</div>
+        }
+        @if (competitorComparison; as comp) {
+          @if (comp.maxSavings > 0) {
+            <div class="market-save-badge" title="Live market comparison with Amazon & Flipkart">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              Save ₹{{ comp.maxSavings | number }} vs Market
+            </div>
+          } @else if (comp.amazonPrice || comp.flipkartPrice) {
+            <div class="market-match-pill" title="Verified against Amazon & Flipkart">
+              Price Matched
+            </div>
+          }
         }
       </div>
 

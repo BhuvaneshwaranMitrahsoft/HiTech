@@ -5,7 +5,7 @@ import { DataService } from '../../../core/services/data.service';
 import { CartService } from '../../../core/services/cart.service';
 import { FavouritesService } from '../../../core/services/favourites.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { ProductItem } from '../../../core/models/product.model';
+import { ProductItem, CompetitorPriceRecord } from '../../../core/models/product.model';
 
 @Component({
   selector: 'app-product-detail',
@@ -24,6 +24,11 @@ export class ProductDetailComponent implements OnInit {
 
   product: ProductItem | null = null;
   quantity: number = 1;
+
+  get competitorPrice(): CompetitorPriceRecord | undefined {
+    if (!this.product) return undefined;
+    return this.dataService.getCompetitorPrice(this.product.id);
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {

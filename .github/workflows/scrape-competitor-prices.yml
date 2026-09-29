@@ -1,0 +1,79 @@
+name: Scheduled Competitor Price Scraper
+
+on:
+  schedule:
+    # Runs daily once at 01:00 AM IST (19:30 UTC)
+    - cron: '30 19 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run mode (test scraping without writing/committing files)'
+        type: boolean
+        required: false
+        default: false
+      limit:
+        description: 'Limit number of products to check (optional)'
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  scrape-prices:
+    name: Scrape Amazon & Flipkart Prices
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Competitor Price Scraper
+        env:
+          SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}
+        run: |
+          CMD="node scripts/scrape-competitor-prices.js"
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+          if [ -n "${{ github.event.inputs.limit }}" ]; then
+            CMD="$CMD --limit=${{ github.event.inputs.limit }}"
+          fi
+          echo "Executing: $CMD"
+          eval $CMD
+
+      - name: Commit and Push Updated Competitor Prices
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/competitor-prices.json
+          
+          if git diff --staged --quiet; then
+            echo "No price changes detected. Nothing to commit."
+          else
+            git commit -m "chore: sync live competitor prices (Amazon & Flipkart) [skip ci]"
+            git push
+            echo "✓ Committed and pushed updated competitor prices."
+          fi
+
+      - name: Trigger Render Deploy Hook (Optional)
+        if: github.event.inputs.dry_run != 'true' && env.RENDER_PROD_DEPLOY_HOOK != ''
+        env:
+          RENDER_PROD_DEPLOY_HOOK: ${{ secrets.RENDER_PROD_DEPLOY_HOOK }}
+        run: |
+          echo "Triggering Render deployment with latest competitor pricing data..."
+          curl -X POST "$RENDER_PROD_DEPLOY_HOOK"

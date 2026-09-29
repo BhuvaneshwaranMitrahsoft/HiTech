@@ -161,6 +161,189 @@
   }
 }
 
+.competitor-comparison-box {
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  background: rgba(15, 23, 42, 0.55);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  .comp-box-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .comp-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse-dot 2s infinite ease-in-out;
+    }
+
+    .comp-heading {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+
+    .comp-time {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+  }
+
+  .comp-deal-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .deal-card {
+    display: flex;
+    flex-direction: column;
+    padding: 0.85rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    &.our-deal {
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.1);
+
+      .deal-price {
+        color: var(--primary-accent);
+      }
+    }
+
+    &.unavail {
+      opacity: 0.5;
+    }
+
+    .deal-store {
+      margin-bottom: 0.4rem;
+
+      .store-name {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .our-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #60a5fa;
+        background: rgba(59, 130, 246, 0.2);
+        padding: 0.15rem 0.45rem;
+        border-radius: var(--radius-pill);
+      }
+    }
+
+    .deal-price {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .deal-subtext {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #38bdf8;
+    }
+
+    .diff-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--radius-pill);
+      display: inline-block;
+      width: fit-content;
+      margin-bottom: 0.4rem;
+
+      &.cheaper {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      &.match {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+      }
+    }
+
+    .comp-verify-link {
+      margin-top: auto;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--primary-accent);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .comp-guarantee-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+
+    svg {
+      color: #10b981;
+      flex-shrink: 0;
+    }
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
 .detail-description {
   color: var(--text-secondary);
   font-size: 1rem;

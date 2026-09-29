@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ProductItem } from '../models/product.model';
+import { ProductItem, CompetitorPriceRecord } from '../models/product.model';
 import { ServiceBookingItem } from '../models/service.model';
 import { ShopOwner, ShopRegistrationForm } from '../models/shop-owner.model';
 import { parseDiscountPercent } from '../utils/wholesale.util';
@@ -25,6 +25,7 @@ export class DataService {
   private _accessories = signal<ProductItem[]>([]);
   private _services = signal<ServiceBookingItem[]>([]);
   private _shopOwners = signal<ShopOwner[]>([]);
+  private _competitorPrices = signal<Record<string, CompetitorPriceRecord>>({});
   private _isLoaded = signal<boolean>(false);
 
   // Readonly public signals
@@ -32,6 +33,7 @@ export class DataService {
   readonly accessories = this._accessories.asReadonly();
   readonly services = this._services.asReadonly();
   readonly shopOwners = this._shopOwners.asReadonly();
+  readonly competitorPrices = this._competitorPrices.asReadonly();
   readonly isLoaded = this._isLoaded.asReadonly();
 
   // Computed signals
@@ -96,12 +98,25 @@ export class DataService {
         });
       }
 
+      // 5. Load Competitor Comparison Prices (scraped from Amazon & Flipkart)
+      this.http.get<Record<string, CompetitorPriceRecord>>('data/competitor-prices.json').subscribe({
+        next: (data) => this._competitorPrices.set(data || {}),
+        error: (err) => this.logger.warn('DataService', 'competitor-prices.json not yet generated or failed to load', err)
+      });
+
       this._isLoaded.set(true);
       this.logger.info('DataService', 'Catalogs initialized successfully');
     } catch (e) {
       this.logger.error('DataService', 'Error during initData', e);
       this._isLoaded.set(true);
     }
+  }
+
+  /**
+   * Helper to fetch competitor comparison prices for a specific product
+   */
+  getCompetitorPrice(productId: string): CompetitorPriceRecord | undefined {
+    return this._competitorPrices()[productId];
   }
 
   // --- Products & Accessories Modifiers ---

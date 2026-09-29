@@ -22,6 +22,7 @@ export class ProductsComponent implements OnInit {
   searchQuery: string = '';
   sortBy: 'featured' | 'price-asc' | 'price-desc' | 'rating' = 'featured';
   inStockOnly: boolean = false;
+  beatCompetitorOnly: boolean = false;
 
   readonly subCategories = [
     'Cases & Covers',
@@ -30,6 +31,13 @@ export class ProductsComponent implements OnInit {
     'Screen Protectors',
     'Power Banks'
   ];
+
+  get dealsCount(): number {
+    return this.dataService.publicAllProducts().filter(p => {
+      const comp = this.dataService.getCompetitorPrice(p.id);
+      return comp && ((comp.amazonPrice && p.price < comp.amazonPrice) || (comp.flipkartPrice && p.price < comp.flipkartPrice));
+    }).length;
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -62,6 +70,14 @@ export class ProductsComponent implements OnInit {
       list = list.filter(p => p.inStock);
     }
 
+    // Beat competitor deals filter
+    if (this.beatCompetitorOnly) {
+      list = list.filter(p => {
+        const comp = this.dataService.getCompetitorPrice(p.id);
+        return comp && ((comp.amazonPrice && p.price < comp.amazonPrice) || (comp.flipkartPrice && p.price < comp.flipkartPrice));
+      });
+    }
+
     // Search query filter
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
@@ -87,6 +103,7 @@ export class ProductsComponent implements OnInit {
     this.selectedSubCategory = 'all';
     this.searchQuery = '';
     this.inStockOnly = false;
+    this.beatCompetitorOnly = false;
     this.sortBy = 'featured';
   }
 }

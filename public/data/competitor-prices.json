@@ -1,0 +1,82 @@
+{
+  "prod-16pm": {
+    "amazonPrice": 146900,
+    "amazonUrl": "https://www.amazon.in/dp/B0DGJ9B8NW",
+    "flipkartPrice": 146900,
+    "flipkartUrl": "https://www.flipkart.com/apple-iphone-16-pro-max-desert-titanium-256-gb/p/itmd04ca5187799e",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  },
+  "prod-16": {
+    "amazonPrice": 79900,
+    "amazonUrl": "https://www.amazon.in/dp/B0DGJ5J3H5",
+    "flipkartPrice": 81999,
+    "flipkartUrl": "https://www.flipkart.com/apple-iphone-16-teal-128-gb/p/itm122a6ee583196",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  },
+  "prod-1": {
+    "amazonPrice": 137990,
+    "amazonUrl": "https://www.amazon.in/dp/B0CHX1W1XY",
+    "flipkartPrice": 136999,
+    "flipkartUrl": "https://www.flipkart.com/apple-iphone-15-pro-max-natural-titanium-256-gb/p/itmbf489626cc9a1",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  },
+  "prod-15": {
+    "amazonPrice": 71900,
+    "amazonUrl": "https://www.amazon.in/dp/B0CHX2F5QT",
+    "flipkartPrice": 70999,
+    "flipkartUrl": "https://www.flipkart.com/apple-iphone-15-blue-128-gb/p/itmbfb9ff3606f33",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  },
+  "prod-s25u": {
+    "amazonPrice": 141999,
+    "amazonUrl": "https://www.amazon.in/dp/B0DS9V5X1Y",
+    "flipkartPrice": 141999,
+    "flipkartUrl": "https://www.flipkart.com/samsung-galaxy-s25-ultra-5g-titanium-gray-512-gb/p/itm12345",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  },
+  "prod-2": {
+    "amazonPrice": 131999,
+    "amazonUrl": "https://www.amazon.in/dp/B0CS5X828H",
+    "flipkartPrice": 132499,
+    "flipkartUrl": "https://www.flipkart.com/samsung-galaxy-s24-ultra-5g-titanium-gray-512-gb/p/itm0a86d26732958",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  },
+  "prod-op13": {
+    "amazonPrice": 71999,
+    "amazonUrl": "https://www.amazon.in/dp/B0DT8K1234",
+    "flipkartPrice": 72499,
+    "flipkartUrl": "https://www.flipkart.com/oneplus-13-5g-midnight-ocean-256-gb/p/itm87654",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  },
+  "prod-3": {
+    "amazonPrice": 65999,
+    "amazonUrl": "https://www.amazon.in/dp/B0CQG3FDTW",
+    "flipkartPrice": 66999,
+    "flipkartUrl": "https://www.flipkart.com/oneplus-12-silky-black-256-gb/p/itmd770c8f5fcf30",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  },
+  "prod-px9pxl": {
+    "amazonPrice": 124999,
+    "amazonUrl": "https://www.amazon.in/dp/B0DC8LMYX1",
+    "flipkartPrice": 124999,
+    "flipkartUrl": "https://www.flipkart.com/google-pixel-9-pro-xl-obsidian-128-gb/p/itm54321",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  },
+  "prod-4": {
+    "amazonPrice": 86999,
+    "amazonUrl": "https://www.amazon.in/dp/B0CGV4R77C",
+    "flipkartPrice": 87499,
+    "flipkartUrl": "https://www.flipkart.com/google-pixel-8-pro-obsidian-128-gb/p/itm87654321",
+    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "status": "success"
+  }
+}
