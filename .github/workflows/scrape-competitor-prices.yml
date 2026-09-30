@@ -16,6 +16,11 @@ on:
         type: string
         required: false
         default: ''
+      all_products:
+        description: 'Check entire catalog (--all)'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
@@ -48,6 +53,9 @@ jobs:
           CMD="node scripts/scrape-competitor-prices.js"
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
             CMD="$CMD --dry-run"
+          fi
+          if [ "${{ github.event.inputs.all_products }}" = "true" ]; then
+            CMD="$CMD --all"
           fi
           if [ -n "${{ github.event.inputs.limit }}" ]; then
             CMD="$CMD --limit=${{ github.event.inputs.limit }}"

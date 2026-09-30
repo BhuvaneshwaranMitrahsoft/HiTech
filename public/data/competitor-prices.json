@@ -1,10 +1,10 @@
 {
   "prod-16pm": {
-    "amazonPrice": 146900,
+    "amazonPrice": 999,
     "amazonUrl": "https://www.amazon.in/dp/B0DGJ9B8NW",
-    "flipkartPrice": 146900,
+    "flipkartPrice": 930,
     "flipkartUrl": "https://www.flipkart.com/apple-iphone-16-pro-max-desert-titanium-256-gb/p/itmd04ca5187799e",
-    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "lastUpdated": "2026-09-30T07:22:37.599Z",
     "status": "success"
   },
   "prod-16": {
@@ -12,7 +12,7 @@
     "amazonUrl": "https://www.amazon.in/dp/B0DGJ5J3H5",
     "flipkartPrice": 81999,
     "flipkartUrl": "https://www.flipkart.com/apple-iphone-16-teal-128-gb/p/itm122a6ee583196",
-    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "lastUpdated": "2026-09-30T06:29:16.491Z",
     "status": "success"
   },
   "prod-1": {
@@ -20,7 +20,7 @@
     "amazonUrl": "https://www.amazon.in/dp/B0CHX1W1XY",
     "flipkartPrice": 136999,
     "flipkartUrl": "https://www.flipkart.com/apple-iphone-15-pro-max-natural-titanium-256-gb/p/itmbf489626cc9a1",
-    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "lastUpdated": "2026-09-30T06:29:23.778Z",
     "status": "success"
   },
   "prod-15": {
@@ -28,7 +28,7 @@
     "amazonUrl": "https://www.amazon.in/dp/B0CHX2F5QT",
     "flipkartPrice": 70999,
     "flipkartUrl": "https://www.flipkart.com/apple-iphone-15-blue-128-gb/p/itmbfb9ff3606f33",
-    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "lastUpdated": "2026-09-30T06:29:31.025Z",
     "status": "success"
   },
   "prod-s25u": {
@@ -44,7 +44,7 @@
     "amazonUrl": "https://www.amazon.in/dp/B0CS5X828H",
     "flipkartPrice": 132499,
     "flipkartUrl": "https://www.flipkart.com/samsung-galaxy-s24-ultra-5g-titanium-gray-512-gb/p/itm0a86d26732958",
-    "lastUpdated": "2026-09-29T06:00:00.000Z",
+    "lastUpdated": "2026-09-30T06:29:36.998Z",
     "status": "success"
   },
   "prod-op13": {

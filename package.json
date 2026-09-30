@@ -10,7 +10,8 @@
     "lint": "ng lint",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadless",
     "test:coverage": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
-    "scrape:prices": "node scripts/scrape-competitor-prices.js"
+    "scrape:prices": "node scripts/scrape-competitor-prices.js",
+    "scrape:prices:all": "node scripts/scrape-competitor-prices.js --all"
   },
   "private": true,
   "dependencies": {
