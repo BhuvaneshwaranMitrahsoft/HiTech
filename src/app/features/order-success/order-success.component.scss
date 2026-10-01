@@ -30,7 +30,7 @@
 }
 
 .success-title {
-  font-size: 2.25rem;
+  font-size: clamp(1.5rem, 4vw + 0.2rem, 2.25rem);
   font-weight: 800;
   margin: 1rem 0 0.5rem;
 }

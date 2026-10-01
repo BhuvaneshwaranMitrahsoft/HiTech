@@ -38,7 +38,7 @@
   }
 
   .shop-name {
-    font-size: 1.85rem;
+    font-size: clamp(1.35rem, 3.5vw + 0.2rem, 1.85rem);
     font-weight: 800;
   }
 
@@ -250,7 +250,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 380px) {
   .bulk-grid {
     grid-template-columns: 1fr;
   }

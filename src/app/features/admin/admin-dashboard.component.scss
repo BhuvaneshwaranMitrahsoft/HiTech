@@ -391,6 +391,11 @@
   padding: 2rem;
   max-height: 90vh;
   overflow-y: auto;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
 
   &.modal-lg {
     max-width: 650px;
@@ -423,8 +428,18 @@
     color: var(--text-muted);
     font-size: 1.25rem;
     cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all var(--transition-fast);
 
-    &:hover { color: #fff; }
+    &:hover {
+      color: var(--text-white);
+      background: var(--bg-surface-elevated);
+    }
   }
 }
 

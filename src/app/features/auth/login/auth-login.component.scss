@@ -39,7 +39,7 @@
   }
 
   .login-title {
-    font-size: 1.85rem;
+    font-size: clamp(1.4rem, 3.5vw + 0.2rem, 1.85rem);
     font-weight: 800;
     margin-bottom: 0.4rem;
   }
@@ -104,8 +104,13 @@
 
     button {
       flex: 1;
+      min-width: 140px;
       font-size: 0.775rem;
       padding: 0.4rem 0.6rem;
+
+      @media (max-width: 400px) {
+        min-width: 100%;
+      }
     }
   }
 }

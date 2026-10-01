@@ -118,3 +118,33 @@
 .book-btn {
   padding: 0.55rem 1.15rem;
 }
+
+@media (max-width: 768px) {
+  .service-card {
+    padding: 1.15rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .service-icon-wrap {
+    width: 42px;
+    height: 42px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .service-title {
+    font-size: 1.05rem;
+  }
+
+  .price-wrap .price-val {
+    font-size: 1.2rem;
+  }
+
+  .book-btn {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
+  }
+}
