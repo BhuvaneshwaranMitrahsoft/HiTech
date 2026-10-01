@@ -59,6 +59,14 @@
   font-size: 0.85rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
+  max-width: 100%;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 0.76rem;
+    padding: 0.35rem 0.75rem;
+    line-height: 1.35;
+  }
 
   .pulse-dot {
     width: 8px;
@@ -66,35 +74,24 @@
     border-radius: 50%;
     background: var(--primary-accent);
     box-shadow: 0 0 10px var(--primary-accent);
+    flex-shrink: 0;
   }
 }
 
 .hero-title {
-  font-size: 3.5rem;
+  font-size: clamp(1.85rem, 5vw + 0.5rem, 3.5rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.15;
-  margin-bottom: 1.5rem;
-
-  @media (max-width: 768px) {
-    font-size: 2.35rem;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 1.8rem;
-  }
+  margin-bottom: 1.25rem;
 }
 
 .hero-subtitle {
-  font-size: 1.15rem;
+  font-size: clamp(0.95rem, 1.5vw + 0.5rem, 1.15rem);
   color: var(--text-secondary);
   line-height: 1.6;
   max-width: 700px;
   margin: 0 auto 2.25rem;
-
-  @media (max-width: 768px) {
-    font-size: 0.95rem;
-  }
 }
 
 .hero-actions {
@@ -105,7 +102,7 @@
   gap: 1rem;
   margin-bottom: 3.5rem;
 
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     flex-direction: column;
     width: 100%;
 
@@ -122,9 +119,13 @@
   padding-top: 2.5rem;
   border-top: 1px solid var(--border-subtle);
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.25rem;
+  }
+
+  @media (max-width: 420px) {
+    gap: 0.85rem;
   }
 }
 
@@ -135,7 +136,7 @@
 
   .stat-num {
     font-family: var(--font-display);
-    font-size: 1.75rem;
+    font-size: clamp(1.35rem, 3vw + 0.5rem, 1.85rem);
     font-weight: 800;
     color: var(--text-white);
     margin-bottom: 0.25rem;
@@ -145,6 +146,7 @@
     font-size: 0.8rem;
     color: var(--text-muted);
     font-weight: 500;
+    text-align: center;
   }
 }
 
@@ -154,8 +156,14 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 680px) {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 
@@ -249,6 +257,14 @@
   padding: 0.35rem;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .tab-btn {
     background: transparent;
@@ -259,6 +275,8 @@
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: all var(--transition-fast);
 
     &.active {
@@ -308,31 +326,45 @@
   display: flex;
   justify-content: center;
   margin-top: 3rem;
+
+  @media (max-width: 768px) {
+    margin-top: 2rem;
+
+    .btn {
+      width: 100%;
+      max-width: 400px;
+    }
+  }
 }
 
 /* Wholesale Banner */
 .wholesale-banner {
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
+  grid-template-columns: 1.5fr 1fr;
   gap: 2rem;
-  padding: 3.5rem;
+  padding: 3rem;
   align-items: center;
   border: 1px solid rgba(124, 58, 237, 0.2);
   background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(124, 58, 237, 0.05) 100%);
 
-  @media (max-width: 900px) {
+  @media (max-width: 1024px) {
     grid-template-columns: 1fr;
-    padding: 2rem;
+    padding: 2.25rem 1.75rem;
+    gap: 1.75rem;
+  }
+
+  @media (max-width: 600px) {
+    padding: 1.5rem 1rem;
   }
 
   .banner-title {
-    font-size: 2.2rem;
+    font-size: clamp(1.4rem, 3.5vw + 0.5rem, 2.2rem);
     margin: 0.75rem 0 1rem;
   }
 
   .banner-desc {
     color: var(--text-secondary);
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.6;
     margin-bottom: 1.5rem;
   }
@@ -346,7 +378,7 @@
 
     li {
       color: var(--text-primary);
-      font-size: 0.95rem;
+      font-size: 0.925rem;
       font-weight: 500;
     }
   }
@@ -355,6 +387,14 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+
+      .btn {
+        width: 100%;
+      }
+    }
   }
 
   .banner-visual {
@@ -366,15 +406,22 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 2.5rem;
+      padding: 2.25rem;
       border-radius: var(--radius-lg);
       background: rgba(124, 58, 237, 0.08);
       border: 1px solid rgba(124, 58, 237, 0.25);
       box-shadow: var(--shadow-purple-glow);
+      width: 100%;
+      max-width: 320px;
+
+      @media (max-width: 600px) {
+        padding: 1.5rem 1rem;
+        max-width: 100%;
+      }
 
       .stat-big {
         font-family: var(--font-display);
-        font-size: 3.5rem;
+        font-size: clamp(2.25rem, 6vw + 0.5rem, 3.5rem);
         font-weight: 900;
         background: linear-gradient(135deg, #7c3aed, var(--primary-accent));
         -webkit-background-clip: text;
@@ -382,7 +429,7 @@
       }
 
       .stat-caption {
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         color: var(--text-secondary);
         font-weight: 600;
         margin-top: 0.5rem;

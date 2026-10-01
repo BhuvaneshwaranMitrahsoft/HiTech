@@ -135,11 +135,28 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   color: var(--text-white);
   line-height: 1.25;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 4.5vw + 0.2rem, 3rem);
+}
+
+h2 {
+  font-size: clamp(1.4rem, 3vw + 0.3rem, 2.25rem);
+}
+
+h3 {
+  font-size: clamp(1.1rem, 2vw + 0.2rem, 1.5rem);
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+img {
+  max-width: 100%;
 }
 
 /* Layout Utilities */
@@ -164,16 +181,32 @@ a {
   margin: 0 auto;
   padding: 0 1.5rem;
 
-  @media (max-width: 600px) {
+  @media (max-width: 1024px) {
+    padding: 0 1.25rem;
+  }
+
+  @media (max-width: 768px) {
     padding: 0 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 0.85rem;
   }
 }
 
 .section-padding {
-  padding: 5rem 0;
+  padding: 4.5rem 0;
+
+  @media (max-width: 1024px) {
+    padding: 3.25rem 0;
+  }
 
   @media (max-width: 768px) {
-    padding: 2.75rem 0;
+    padding: 2.25rem 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.75rem 0;
   }
 }
 
@@ -640,7 +673,7 @@ textarea.form-control {
     }
   }
 
-  /* Modals go full-screen on mobile like native app sheets */
+  /* Modals go full-screen on mobile like native app bottom sheets */
   .modal-backdrop {
     padding: 0;
     align-items: flex-end;
@@ -653,6 +686,10 @@ textarea.form-control {
     border-radius: 20px 20px 0 0;
     padding: 1.5rem 1.25rem;
     animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+    border-bottom: none;
 
     &.modal-lg,
     &.modal-md {
@@ -695,11 +732,11 @@ textarea.form-control {
 /* Extra small screens (phones in portrait) */
 @media (max-width: 480px) {
   .container {
-    padding: 0 0.65rem;
+    padding: 0 0.75rem;
   }
 
   .section-padding {
-    padding: 1.25rem 0;
+    padding: 1.5rem 0;
   }
 
   h1, h2, h3 {
@@ -708,14 +745,27 @@ textarea.form-control {
 
   .glass-panel {
     border-radius: 14px;
-    margin-left: -0.15rem;
-    margin-right: -0.15rem;
+    margin-left: 0;
+    margin-right: 0;
   }
 
-  /* Full-width buttons on very small screens */
-  .btn:not(.btn-sm) {
-    width: 100%;
-    justify-content: center;
+  .btn-block-mobile {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Utility Display Classes */
+.hidden-mobile {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+.visible-mobile {
+  display: none !important;
+  @media (max-width: 768px) {
+    display: block !important;
   }
 }
 

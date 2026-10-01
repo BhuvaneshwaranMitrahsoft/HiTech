@@ -33,7 +33,7 @@
 }
 
 .otp-title {
-  font-size: 1.85rem;
+  font-size: clamp(1.4rem, 3.5vw + 0.2rem, 1.85rem);
   font-weight: 800;
   margin: 0.75rem 0 0.5rem;
 }
@@ -103,24 +103,25 @@
 
 .otp-boxes-grid {
   display: flex;
-  gap: 0.65rem;
+  gap: clamp(0.3rem, 1.5vw, 0.65rem);
   justify-content: center;
   margin-bottom: 2rem;
   width: 100%;
 
   .otp-digit-box {
-    width: 50px;
-    height: 58px;
+    width: clamp(38px, 11vw, 50px);
+    height: clamp(48px, 13vw, 58px);
     border-radius: var(--radius-sm);
     background: var(--bg-surface);
     border: 2px solid var(--border-medium);
     color: var(--primary-accent);
     font-family: var(--font-display);
-    font-size: 1.75rem;
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
     font-weight: 800;
     text-align: center;
     outline: none;
     transition: all var(--transition-fast);
+    padding: 0;
 
     &:focus {
       border-color: var(--primary-accent);

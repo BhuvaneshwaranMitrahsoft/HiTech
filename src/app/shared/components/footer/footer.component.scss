@@ -206,10 +206,9 @@
 /* Mobile App-Like Footer */
 @media (max-width: 768px) {
   .site-footer {
-    margin-top: 2rem;
-    padding-top: 2.5rem;
-    /* Account for bottom navigation bar */
-    padding-bottom: 72px;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    padding-bottom: 1.5rem;
   }
 
   .footer-top {
